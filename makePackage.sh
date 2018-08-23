@@ -19,6 +19,7 @@ declare -a systemExclude=(
     "*.DS_Store"
 )
 declare -a fileExclude=(
+    "art/*"
     "README.md"
     "makePackage.sh"
     "release/*"

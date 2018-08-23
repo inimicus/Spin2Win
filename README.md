@@ -4,6 +4,10 @@ Sure, you can spin to win. But _can you quantify_ how much winning you did from 
 
 Now you can!
 
+<p align="center">
+    <img src="https://github.com/inimicus/Spin2Win/blob/master/art/Spin2Win.png?raw=true"><br>
+</p>
+
 ## Functionality
 - Tracks total spins (Whirlwind, Whirling Blades, Steel Tornado)
 - Doesn't judge you if you haven't yet morphed Whirlwind or use Whirling Blades
