@@ -171,3 +171,28 @@ function S2W.UI.Position.Set(left, top)
     S2W.Container:ClearAnchors()
     S2W.Container:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, left, top)
 end
+
+function S2W.SlashCommand(command)
+    -- Debug Options ----------------------------------------------------------
+    if command == "debug 0" then
+        d(S2W.prefix .. "Setting debug level to 0 (Off)")
+        S2W.debugMode = 0
+        S2W.preferences.debugMode = 0
+    elseif command == "debug 1" then
+        d(S2W.prefix .. "Setting debug level to 1 (Low)")
+        S2W.debugMode = 1
+        S2W.preferences.debugMode = 1
+    elseif command == "debug 2" then
+        d(S2W.prefix .. "Setting debug level to 2 (Medium)")
+        S2W.debugMode = 2
+        S2W.saved.debugMode = 2
+    elseif command == "debug 3" then
+        d(S2W.prefix .. "Setting debug level to 3 (High)")
+        S2W.debugMode = 3
+        S2W.saved.debugMode = 3
+
+    -- Default ----------------------------------------------------------------
+    else
+        d(S2W.prefix .. "Command not recognized!")
+    end
+end
