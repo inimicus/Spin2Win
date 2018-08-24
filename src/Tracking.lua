@@ -114,7 +114,7 @@ end
 --  number abilityId
 --)
 function _AvAWin(eventID, result, isError, abilityName, _, _, sourceName, sourceType, targetName, targetType, _, _, _, _, _, _, abilityId)
-    S2W:Trace(2, zo_strformat("Win: <<1>> (<<2>>) on target <<3>> (<<4>>) with result <<5>>", abilityName, abilityId, targetName, targetType, result))
+    S2W:Trace(2, zo_strformat("AVA Win: <<1>> (<<2>>) on target <<3>> (<<4>>) with result <<5>>", abilityName, abilityId, targetName, targetType, result))
     S2W.Tracking.DidWin()
 end
 
@@ -130,11 +130,11 @@ end
 --  number killingAbilityId
 --)
 function _BGWin(_, killedPlayerCharacterName, killedPlayerDisplayName, _, killingPlayerCharacterName, _, _, battlegroundKillType, killingAbilityId)
+    S2W:Trace(2, zo_strformat("BG Win: #<<1>> on target <<2>>", killingAbilityId, killedPlayerCharacterName))
     -- Ignore non-spin kills
     if killingAbilityId ~= SPIN2WIN_ABILITY_ID or
         killingAbilityId ~= WHIRLWIND_ABILITY_ID or
         killingAbilityId ~= WHIRLING_BLADES_ABILITY_ID then return end
-    S2W:Trace(2, zo_strformat("Win: #<<1>> on target <<2>>", killingAbilityId, killedPlayerCharacterName))
     S2W.Tracking.DidWin()
 end
 
