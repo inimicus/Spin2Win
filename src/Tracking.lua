@@ -139,12 +139,13 @@ function _BGWin(_, killedPlayerCharacterName, _, _, _, _, _, battlegroundKillTyp
     if killingAbilityId ~= SPIN2WIN_ABILITY_ID or
         killingAbilityId ~= WHIRLWIND_ABILITY_ID or
         killingAbilityId ~= WHIRLING_BLADES_ABILITY_ID then return end
+
     S2W.Tracking.DidWin()
 end
 
 function S2W.Tracking.DidWin()
-    S2W:Trace(1, "Counted " .. S2W.Tracking.WinCount .. " wins")
     S2W.Tracking.WinCount = S2W.Tracking.WinCount + 1
+    S2W:Trace(1, zo_strformat("Counted <<1>> wins", S2W.Tracking.WinCount))
     S2W.UI.UpdateWins(S2W.Tracking.WinCount)
 end
 
