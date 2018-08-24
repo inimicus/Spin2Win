@@ -15,8 +15,10 @@ local SPIN2WIN_EFFECT_ID = 39665
 
 function S2W.Tracking.RegisterEvents()
 
-	-- SPINNING ------------------------
-	EVENT_MANAGER:RegisterForEvent(S2W.name, EVENT_EFFECT_CHANGED, S2W.Tracking.DidSpin)
+    S2W:Trace(2, "Registering events")
+
+    -- SPINNING ------------------------
+    EVENT_MANAGER:RegisterForEvent(S2W.name, EVENT_EFFECT_CHANGED, S2W.Tracking.DidSpin)
     EVENT_MANAGER:AddFilterForEvent(S2W.name, EVENT_EFFECT_CHANGED,
 		REGISTER_FILTER_ABILITY_ID,					SPIN2WIN_EFFECT_ID,
 		REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE,	COMBAT_UNIT_TYPE_PLAYER)
@@ -37,7 +39,6 @@ function S2W.Tracking.RegisterEvents()
 		REGISTER_FILTER_ABILITY_ID,	SPIN2WIN_ABILITY_ID,
 		REGISTER_FILTER_UNIT_TAG,	COMBAT_UNIT_TYPE_PLAYER)
 
-    S2W:Trace(2, "Registering events")
 end
 
 function S2W.Tracking.UnregisterEvents()
