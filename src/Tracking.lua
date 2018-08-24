@@ -36,8 +36,8 @@ function S2W.Tracking.RegisterEvents()
 	-- This needs further testing
 	EVENT_MANAGER:RegisterForEvent(S2W.name, EVENT_BATTLEGROUND_KILL, _BGWin)
     EVENT_MANAGER:AddFilterForEvent(S2W.name, EVENT_BATTLEGROUND_KILL,
-		REGISTER_FILTER_ABILITY_ID,	SPIN2WIN_ABILITY_ID,
-		REGISTER_FILTER_UNIT_TAG,	COMBAT_UNIT_TYPE_PLAYER)
+        --REGISTER_FILTER_ABILITY_ID,   SPIN2WIN_ABILITY_ID,
+        REGISTER_FILTER_UNIT_TAG,   COMBAT_UNIT_TYPE_PLAYER)
 
 end
 
@@ -96,8 +96,10 @@ end
 --	number killingAbilityId
 --)
 function _BGWin(_, killedPlayerCharacterName, killedPlayerDisplayName, _, killingPlayerCharacterName, _, _, battlegroundKillType, killingAbilityId)
-	S2W:Trace(2, zo_strformat("Win: #<<1>> on target <<2>>", killingAbilityId, killedPlayerCharacterName))
-	S2W.Tracking.DidWin()
+    -- Ignore non-spin kills
+    if killingAbilityId ~= SPIN2WIN_ABILITY_ID or killingAbilityId ~= SPIN2WIN_EFFECT_ID then return end
+    S2W:Trace(2, zo_strformat("Win: #<<1>> on target <<2>>", killingAbilityId, killedPlayerCharacterName))
+    S2W.Tracking.DidWin()
 end
 
 function S2W.Tracking.DidWin()
