@@ -10,24 +10,53 @@ S2W.Tracking = {}
 S2W.Tracking.SpinCount = 0
 S2W.Tracking.WinCount = 0
 
-local SPIN2WIN_ABILITY_ID = 38861
 local SPIN2WIN_EFFECT_ID = 39665
+local WHIRLWIND_EFFECT_ID = 39620
+local WHIRLING_BLADES_EFFECT_ID = 39666
+
+local SPIN2WIN_ABILITY_ID = 38861
+local WHIRLWIND_ABILITY_ID = 28591
+local WHIRLING_BLADES_ABILITY_ID = 38891
 
 function S2W.Tracking.RegisterEvents()
 
     S2W:Trace(2, "Registering events")
 
     -- SPINNING ------------------------
-    EVENT_MANAGER:RegisterForEvent(S2W.name, EVENT_EFFECT_CHANGED, S2W.Tracking.DidSpin)
-    EVENT_MANAGER:AddFilterForEvent(S2W.name, EVENT_EFFECT_CHANGED,
+    EVENT_MANAGER:RegisterForEvent(S2W.name .. "SPIN2WIN", EVENT_EFFECT_CHANGED, S2W.Tracking.DidSpin)
+    EVENT_MANAGER:AddFilterForEvent(S2W.name .. "SPIN2WIN", EVENT_EFFECT_CHANGED,
         REGISTER_FILTER_ABILITY_ID,                 SPIN2WIN_EFFECT_ID,
+        REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE,    COMBAT_UNIT_TYPE_PLAYER)
+
+    EVENT_MANAGER:RegisterForEvent(S2W.name .. "WHIRLWIND", EVENT_EFFECT_CHANGED, S2W.Tracking.DidSpin)
+    EVENT_MANAGER:AddFilterForEvent(S2W.name .. "WHIRLWIND", EVENT_EFFECT_CHANGED,
+        REGISTER_FILTER_ABILITY_ID,                 WHIRLWIND_EFFECT_ID,
+        REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE,    COMBAT_UNIT_TYPE_PLAYER)
+
+    EVENT_MANAGER:RegisterForEvent(S2W.name .. "WHIRLING_BLADES", EVENT_EFFECT_CHANGED, S2W.Tracking.DidSpin)
+    EVENT_MANAGER:AddFilterForEvent(S2W.name .. "WHIRLING_BLADES", EVENT_EFFECT_CHANGED,
+        REGISTER_FILTER_ABILITY_ID,                 WHIRLING_BLADES_EFFECT_ID,
         REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE,    COMBAT_UNIT_TYPE_PLAYER)
 
     -- WINNING ---------------------------------------------------------------
     -- Alliance vs Alliance
-    EVENT_MANAGER:RegisterForEvent(S2W.name, EVENT_COMBAT_EVENT, _AvAWin)
-    EVENT_MANAGER:AddFilterForEvent(S2W.name, EVENT_COMBAT_EVENT,
+    EVENT_MANAGER:RegisterForEvent(S2W.name .. "SPIN2WIN", EVENT_COMBAT_EVENT, _AvAWin)
+    EVENT_MANAGER:AddFilterForEvent(S2W.name .. "SPIN2WIN", EVENT_COMBAT_EVENT,
         REGISTER_FILTER_ABILITY_ID,     SPIN2WIN_ABILITY_ID,
+        REGISTER_FILTER_UNIT_TAG,       COMBAT_UNIT_TYPE_PLAYER,
+        REGISTER_FILTER_IS_ERROR,       false,
+        REGISTER_FILTER_COMBAT_RESULT,  ACTION_RESULT_KILLING_BLOW)
+
+    EVENT_MANAGER:RegisterForEvent(S2W.name .. "WHIRLWIND", EVENT_COMBAT_EVENT, _AvAWin)
+    EVENT_MANAGER:AddFilterForEvent(S2W.name .. "WHIRLWIND", EVENT_COMBAT_EVENT,
+        REGISTER_FILTER_ABILITY_ID,     WHIRLWIND_ABILITY_ID,
+        REGISTER_FILTER_UNIT_TAG,       COMBAT_UNIT_TYPE_PLAYER,
+        REGISTER_FILTER_IS_ERROR,       false,
+        REGISTER_FILTER_COMBAT_RESULT,  ACTION_RESULT_KILLING_BLOW)
+
+    EVENT_MANAGER:RegisterForEvent(S2W.name .. "WHIRLINGBLADES", EVENT_COMBAT_EVENT, _AvAWin)
+    EVENT_MANAGER:AddFilterForEvent(S2W.name .. "WHIRLINGBLADES", EVENT_COMBAT_EVENT,
+        REGISTER_FILTER_ABILITY_ID,     WHIRLING_BLADES_ABILITY_ID,
         REGISTER_FILTER_UNIT_TAG,       COMBAT_UNIT_TYPE_PLAYER,
         REGISTER_FILTER_IS_ERROR,       false,
         REGISTER_FILTER_COMBAT_RESULT,  ACTION_RESULT_KILLING_BLOW)
@@ -42,8 +71,12 @@ function S2W.Tracking.RegisterEvents()
 end
 
 function S2W.Tracking.UnregisterEvents()
-    EVENT_MANAGER:UnregisterForEvent(S2W.name, EVENT_EFFECT_CHANGED)
-    EVENT_MANAGER:UnregisterForEvent(S2W.name, EVENT_COMBAT_EVENT)
+    EVENT_MANAGER:UnregisterForEvent(S2W.name .. "SPIN2WIN", EVENT_EFFECT_CHANGED)
+    EVENT_MANAGER:UnregisterForEvent(S2W.name .. "WHIRLWIND", EVENT_EFFECT_CHANGED)
+    EVENT_MANAGER:UnregisterForEvent(S2W.name .. "WHIRLING_BLADES", EVENT_EFFECT_CHANGED)
+    EVENT_MANAGER:UnregisterForEvent(S2W.name .. "SPIN2WIN", EVENT_COMBAT_EVENT)
+    EVENT_MANAGER:UnregisterForEvent(S2W.name .. "WHIRLWIND", EVENT_COMBAT_EVENT)
+    EVENT_MANAGER:UnregisterForEvent(S2W.name .. "WHIRLING_BLADES", EVENT_COMBAT_EVENT)
     EVENT_MANAGER:UnregisterForEvent(S2W.name, EVENT_BATTLEGROUND_KILL)
     S2W:Trace(2, "Unregistering effects")
 end
@@ -97,7 +130,9 @@ end
 --)
 function _BGWin(_, killedPlayerCharacterName, killedPlayerDisplayName, _, killingPlayerCharacterName, _, _, battlegroundKillType, killingAbilityId)
     -- Ignore non-spin kills
-    if killingAbilityId ~= SPIN2WIN_ABILITY_ID or killingAbilityId ~= SPIN2WIN_EFFECT_ID then return end
+    if killingAbilityId ~= SPIN2WIN_ABILITY_ID or
+        killingAbilityId ~= WHIRLWIND_ABILITY_ID or
+        killingAbilityId ~= WHIRLING_BLADES_ABILITY_ID then return end
     S2W:Trace(2, zo_strformat("Win: #<<1>> on target <<2>>", killingAbilityId, killedPlayerCharacterName))
     S2W.Tracking.DidWin()
 end
