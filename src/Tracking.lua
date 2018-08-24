@@ -129,7 +129,7 @@ end
 --  BattlegroundKillType battlegroundKillType,
 --  number killingAbilityId
 --)
-function _BGWin(_, killedPlayerCharacterName, killedPlayerDisplayName, _, killingPlayerCharacterName, _, _, battlegroundKillType, killingAbilityId)
+function _BGWin(_, killedPlayerCharacterName, _, _, _, _, _, battlegroundKillType, killingAbilityId)
     S2W:Trace(2, zo_strformat("BG Win: #<<1>> on target <<2>>", killingAbilityId, killedPlayerCharacterName))
     -- Ignore non-spin kills
     if killingAbilityId ~= SPIN2WIN_ABILITY_ID or
