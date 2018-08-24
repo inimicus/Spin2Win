@@ -131,6 +131,10 @@ end
 --)
 function _BGWin(_, killedPlayerCharacterName, _, _, _, _, _, battlegroundKillType, killingAbilityId)
     S2W:Trace(2, zo_strformat("BG Win: #<<1>> on target <<2>>", killingAbilityId, killedPlayerCharacterName))
+
+    -- Ignore all but killing blows
+    if battlegroundKillType ~= BATTLEGROUND_KILL_TYPE_KILLING_BLOW then return end
+
     -- Ignore non-spin kills
     if killingAbilityId ~= SPIN2WIN_ABILITY_ID or
         killingAbilityId ~= WHIRLWIND_ABILITY_ID or
