@@ -177,11 +177,11 @@ function S2W.SlashCommand(command)
     if command == "debug 0" then
         d(S2W.prefix .. "Setting debug level to 0 (Off)")
         S2W.debugMode = 0
-        S2W.preferences.debugMode = 0
+        S2W.saved.debugMode = 0
     elseif command == "debug 1" then
         d(S2W.prefix .. "Setting debug level to 1 (Low)")
         S2W.debugMode = 1
-        S2W.preferences.debugMode = 1
+        S2W.saved.debugMode = 1
     elseif command == "debug 2" then
         d(S2W.prefix .. "Setting debug level to 2 (Medium)")
         S2W.debugMode = 2
