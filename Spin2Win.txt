@@ -2,7 +2,7 @@
 ## APIVersion: 100024
 ## SavedVariables: Spin2WinVariables
 ## Description: See how much spinning and winning you did!
-## Version: 1.0.0_Beta
+## Version: 1.0.1_Beta
 ## Author: |cFFCCCC@g4rr3t|r
 
 src/Main.lua
