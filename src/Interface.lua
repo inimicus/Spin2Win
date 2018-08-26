@@ -25,7 +25,7 @@ function S2W.UI.Draw()
 
     local bg = WINDOW_MANAGER:CreateControl("S2WBackdrop", c, CT_BACKDROP)
     bg:SetEdgeColor(0.1, 0.1, 0.1, 0.25)
-    bg:SetEdgeTexture(_, 1, 1, 0, _)
+    bg:SetEdgeTexture(nil, 1, 1, 0, nil)
     bg:SetCenterColor(0.1, 0.1, 0.1, 0.25)
     bg:SetAnchor(TOPLEFT, c, TOPLEFT, 0, 0)
     bg:SetDimensions(200, 50)
