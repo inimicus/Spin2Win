@@ -136,20 +136,21 @@ end
 --  number killingAbilityId
 --)
 function _BGWin(_, killedPlayerCharacterName, _, _, _, _, _, battlegroundKillType, killingAbilityId)
-    S2W:Trace(2, zo_strformat("BG Win: <<1>> (<<2>>) on target <<3>> with type <<4>>", GetAbilityName(killingAbilityId), killingAbilityId, killedPlayerCharacterName, battlegroundKillType))
 
     -- Ignore all but killing blows
     if battlegroundKillType ~= BATTLEGROUND_KILL_TYPE_KILLING_BLOW then return end
 
-    -- Ignore non-spin kills
-    if killingAbilityId ~= SPIN2WIN_ABILITY_ID or
-            killingAbilityId ~= WHIRLWIND_ABILITY_ID or
-            killingAbilityId ~= WHIRLING_BLADES_ABILITY_ID then
+    -- Only count Spin-based wins
+    if killingAbilityId == SPIN2WIN_ABILITY_ID or
+            killingAbilityId == WHIRLWIND_ABILITY_ID or
+            killingAbilityId == WHIRLING_BLADES_ABILITY_ID then
+        S2W:Trace(2, zo_strformat("BG Win: On <<1>> with <<2>> (<<3>>)", killedPlayerCharacterName, GetAbilityName(killingAbilityId), killingAbilityId))
+        S2W.Tracking.DidWin()
+    else 
         S2W:Trace(2, zo_strformat("BG No-Spin KB: <<1>> (<<2>>)", GetAbilityName(killingAbilityId), killingAbilityId))
         return
     end
 
-    S2W.Tracking.DidWin()
 end
 
 function S2W.Tracking.DidWin()
