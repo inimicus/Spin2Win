@@ -65,7 +65,6 @@ function S2W.Tracking.RegisterEvents()
     -- This needs further testing
     EVENT_MANAGER:RegisterForEvent(S2W.name, EVENT_BATTLEGROUND_KILL, _BGWin)
     EVENT_MANAGER:AddFilterForEvent(S2W.name, EVENT_BATTLEGROUND_KILL,
-        --REGISTER_FILTER_ABILITY_ID,   SPIN2WIN_ABILITY_ID,
         REGISTER_FILTER_UNIT_TAG,   COMBAT_UNIT_TYPE_PLAYER)
 
 end
@@ -114,8 +113,15 @@ end
 --  number abilityId
 --)
 function _AvAWin(eventID, result, isError, abilityName, _, _, sourceName, sourceType, targetName, targetType, _, _, _, _, _, _, abilityId)
-    S2W:Trace(2, zo_strformat("AVA Win: <<1>> (<<2>>) on target <<3>> (<<4>>) with result <<5>>", abilityName, abilityId, targetName, targetType, result))
-    S2W.Tracking.DidWin()
+
+    -- Only count player wins
+    if sourceType == COMBAT_UNIT_TYPE_PLAYER or sourceName ~= targetName then
+        S2W:Trace(2, zo_strformat("AVA Win: <<1>> killed <<2>> with <<3>> (<<4>>)", sourceName, targetName, abilityName, abilityId))
+        S2W.Tracking.DidWin()
+    else
+        S2W:Trace(2, zo_strformat("No AVA Win: Non-player source or self-inflicted - <<1>> killed <<2>> with <<3>> (<<4>>)", sourceName, targetName, abilityName, abilityId))
+    end
+
 end
 
 --EVENT_BATTLEGROUND_KILL (
@@ -130,20 +136,21 @@ end
 --  number killingAbilityId
 --)
 function _BGWin(_, killedPlayerCharacterName, _, _, _, _, _, battlegroundKillType, killingAbilityId)
-    S2W:Trace(2, zo_strformat("BG Win: #<<1>> on target <<2>> with type <<3>>", killingAbilityId, killedPlayerCharacterName, battlegroundKillType))
 
     -- Ignore all but killing blows
     if battlegroundKillType ~= BATTLEGROUND_KILL_TYPE_KILLING_BLOW then return end
 
-    -- Ignore non-spin kills
-    if killingAbilityId ~= SPIN2WIN_ABILITY_ID or
-            killingAbilityId ~= WHIRLWIND_ABILITY_ID or
-            killingAbilityId ~= WHIRLING_BLADES_ABILITY_ID then
-        S2W:Trace(2, zo_strformat("BG No-Spin KB: #<<1>>", killingAbilityId))
+    -- Only count Spin-based wins
+    if killingAbilityId == SPIN2WIN_ABILITY_ID or
+            killingAbilityId == WHIRLWIND_ABILITY_ID or
+            killingAbilityId == WHIRLING_BLADES_ABILITY_ID then
+        S2W:Trace(2, zo_strformat("BG Win: On <<1>> with <<2>> (<<3>>)", killedPlayerCharacterName, GetAbilityName(killingAbilityId), killingAbilityId))
+        S2W.Tracking.DidWin()
+    else 
+        S2W:Trace(2, zo_strformat("BG No-Spin KB: <<1>> (<<2>>)", GetAbilityName(killingAbilityId), killingAbilityId))
         return
     end
 
-    S2W.Tracking.DidWin()
 end
 
 function S2W.Tracking.DidWin()
