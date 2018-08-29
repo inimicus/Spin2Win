@@ -116,10 +116,10 @@ function _AvAWin(eventID, result, isError, abilityName, _, _, sourceName, source
 
     -- Only count player wins
     if sourceType == COMBAT_UNIT_TYPE_PLAYER or sourceName ~= targetName then
-        S2W:Trace(2, zo_strformat("AVA Win: <<1>> on <<2>> with <<3>> (<<4>>)", sourceName, targetName, abilityName, abilityId))
+        S2W:Trace(2, zo_strformat("AVA Win: <<1>> killed <<2>> with <<3>> (<<4>>)", sourceName, targetName, abilityName, abilityId))
         S2W.Tracking.DidWin()
     else
-        S2W:Trace(2, zo_strformat("No AVA Win: Non-player source or self-inflicted - <<1>> on <<2>> with <<3>> (<<4>>)", sourceName, targetName, abilityName, abilityId))
+        S2W:Trace(2, zo_strformat("No AVA Win: Non-player source or self-inflicted - <<1>> killed <<2>> with <<3>> (<<4>>)", sourceName, targetName, abilityName, abilityId))
     end
 
 end
