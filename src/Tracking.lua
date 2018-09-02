@@ -10,74 +10,90 @@ S2W.Tracking = {}
 S2W.Tracking.SpinCount = 0
 S2W.Tracking.WinCount = 0
 
-local SPIN2WIN_EFFECT_ID = 39665
-local WHIRLWIND_EFFECT_ID = 39620
-local WHIRLING_BLADES_EFFECT_ID = 39666
-
-local SPIN2WIN_ABILITY_ID = 38861
-local WHIRLWIND_ABILITY_ID = 28591
-local WHIRLING_BLADES_ABILITY_ID = 38891
+local IDs = {
+    STEEL_TORNADO = {
+        EFFECT = 39665,
+        ABILITY = 38861,
+    },
+    WHIRLWIND = {
+        EFFECT = 39620,
+        ABILITY = 28591,
+    },
+    WHIRLING_BLADES = {
+        EFFECT = 39666,
+        ABILITY = 38891,
+    },
+}
 
 function S2W.Tracking.RegisterEvents()
 
     S2W:Trace(2, "Registering events")
 
-    -- SPINNING ------------------------
-    EVENT_MANAGER:RegisterForEvent(S2W.name .. "SPIN2WIN", EVENT_EFFECT_CHANGED, S2W.Tracking.DidSpin)
-    EVENT_MANAGER:AddFilterForEvent(S2W.name .. "SPIN2WIN", EVENT_EFFECT_CHANGED,
-        REGISTER_FILTER_ABILITY_ID,                 SPIN2WIN_EFFECT_ID,
-        REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE,    COMBAT_UNIT_TYPE_PLAYER)
+    for morph, table in pairs(IDs) do
 
-    EVENT_MANAGER:RegisterForEvent(S2W.name .. "WHIRLWIND", EVENT_EFFECT_CHANGED, S2W.Tracking.DidSpin)
-    EVENT_MANAGER:AddFilterForEvent(S2W.name .. "WHIRLWIND", EVENT_EFFECT_CHANGED,
-        REGISTER_FILTER_ABILITY_ID,                 WHIRLWIND_EFFECT_ID,
-        REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE,    COMBAT_UNIT_TYPE_PLAYER)
+        S2W:Trace(2, "Registering: " .. morph)
 
-    EVENT_MANAGER:RegisterForEvent(S2W.name .. "WHIRLING_BLADES", EVENT_EFFECT_CHANGED, S2W.Tracking.DidSpin)
-    EVENT_MANAGER:AddFilterForEvent(S2W.name .. "WHIRLING_BLADES", EVENT_EFFECT_CHANGED,
-        REGISTER_FILTER_ABILITY_ID,                 WHIRLING_BLADES_EFFECT_ID,
-        REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE,    COMBAT_UNIT_TYPE_PLAYER)
+        for skillType, id in pairs(table) do
 
-    -- WINNING ---------------------------------------------------------------
-    -- Alliance vs Alliance
-    EVENT_MANAGER:RegisterForEvent(S2W.name .. "SPIN2WIN", EVENT_COMBAT_EVENT, _AvAWin)
-    EVENT_MANAGER:AddFilterForEvent(S2W.name .. "SPIN2WIN", EVENT_COMBAT_EVENT,
-        REGISTER_FILTER_ABILITY_ID,     SPIN2WIN_ABILITY_ID,
-        REGISTER_FILTER_UNIT_TAG,       COMBAT_UNIT_TYPE_PLAYER,
-        REGISTER_FILTER_IS_ERROR,       false,
-        REGISTER_FILTER_COMBAT_RESULT,  ACTION_RESULT_KILLING_BLOW)
+            local name = zo_strformat("<<1>>_<<2>>_<<3>>", S2W.name, morph, skillType)
+            S2W:Trace(3, zo_strformat("Registering: <<1>> (<<2>>)", morph, id))
 
-    EVENT_MANAGER:RegisterForEvent(S2W.name .. "WHIRLWIND", EVENT_COMBAT_EVENT, _AvAWin)
-    EVENT_MANAGER:AddFilterForEvent(S2W.name .. "WHIRLWIND", EVENT_COMBAT_EVENT,
-        REGISTER_FILTER_ABILITY_ID,     WHIRLWIND_ABILITY_ID,
-        REGISTER_FILTER_UNIT_TAG,       COMBAT_UNIT_TYPE_PLAYER,
-        REGISTER_FILTER_IS_ERROR,       false,
-        REGISTER_FILTER_COMBAT_RESULT,  ACTION_RESULT_KILLING_BLOW)
+            -- Register effects - Spins
+            if skillType == "EFFECT" then
+                EVENT_MANAGER:RegisterForEvent(name, EVENT_EFFECT_CHANGED, S2W.Tracking.DidSpin)
+                EVENT_MANAGER:AddFilterForEvent(name, EVENT_EFFECT_CHANGED,
+                    REGISTER_FILTER_ABILITY_ID,                 id,
+                    REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE,    COMBAT_UNIT_TYPE_PLAYER)
 
-    EVENT_MANAGER:RegisterForEvent(S2W.name .. "WHIRLINGBLADES", EVENT_COMBAT_EVENT, _AvAWin)
-    EVENT_MANAGER:AddFilterForEvent(S2W.name .. "WHIRLINGBLADES", EVENT_COMBAT_EVENT,
-        REGISTER_FILTER_ABILITY_ID,     WHIRLING_BLADES_ABILITY_ID,
-        REGISTER_FILTER_UNIT_TAG,       COMBAT_UNIT_TYPE_PLAYER,
-        REGISTER_FILTER_IS_ERROR,       false,
-        REGISTER_FILTER_COMBAT_RESULT,  ACTION_RESULT_KILLING_BLOW)
+            -- Register abilities - Wins
+            elseif skillType == "ABILITY" then
+                EVENT_MANAGER:RegisterForEvent(name, EVENT_COMBAT_EVENT, _AvAWin)
+                EVENT_MANAGER:AddFilterForEvent(name, EVENT_COMBAT_EVENT,
+                    REGISTER_FILTER_ABILITY_ID,     id,
+                    REGISTER_FILTER_UNIT_TAG,       COMBAT_UNIT_TYPE_PLAYER,
+                    REGISTER_FILTER_IS_ERROR,       false,
+                    REGISTER_FILTER_COMBAT_RESULT,  ACTION_RESULT_KILLING_BLOW)
 
-    -- Battlegrounds
-    -- This needs further testing
+            -- Not a valid skillType
+            else
+                -- Do nothing
+            end
+
+        end
+    end
+
+    -- Battlegrounds KBs
     EVENT_MANAGER:RegisterForEvent(S2W.name, EVENT_BATTLEGROUND_KILL, _BGWin)
     EVENT_MANAGER:AddFilterForEvent(S2W.name, EVENT_BATTLEGROUND_KILL,
-        REGISTER_FILTER_UNIT_TAG,   COMBAT_UNIT_TYPE_PLAYER)
+        REGISTER_FILTER_UNIT_TAG, COMBAT_UNIT_TYPE_PLAYER)
 
 end
 
 function S2W.Tracking.UnregisterEvents()
-    EVENT_MANAGER:UnregisterForEvent(S2W.name .. "SPIN2WIN", EVENT_EFFECT_CHANGED)
-    EVENT_MANAGER:UnregisterForEvent(S2W.name .. "WHIRLWIND", EVENT_EFFECT_CHANGED)
-    EVENT_MANAGER:UnregisterForEvent(S2W.name .. "WHIRLING_BLADES", EVENT_EFFECT_CHANGED)
-    EVENT_MANAGER:UnregisterForEvent(S2W.name .. "SPIN2WIN", EVENT_COMBAT_EVENT)
-    EVENT_MANAGER:UnregisterForEvent(S2W.name .. "WHIRLWIND", EVENT_COMBAT_EVENT)
-    EVENT_MANAGER:UnregisterForEvent(S2W.name .. "WHIRLING_BLADES", EVENT_COMBAT_EVENT)
+    for morph, table in pairs(S2W.Tracking.IDs) do
+        S2W:Trace(2, "Unregistering: " .. morph)
+
+        for skillType, id in pairs(table) do
+            local name = zo_strformat("<<1>>_<<2>>_<<3>>", S2W.name, morph, skillType)
+            S2W:Trace(3, zo_strformat("Unregistering: <<1>> (<<2>>)", morph, id))
+
+            -- Unregister effects
+            if skillType == "EFFECT" then
+                EVENT_MANAGER:UnregisterForEvent(name, EVENT_EFFECT_CHANGED)
+
+            -- Unregister abilities
+            elseif skillType == "ABILITY" then
+                EVENT_MANAGER:UnregisterForEvent(name, EVENT_COMBAT_EVENT)
+
+            -- Not a valid skillType
+            else
+                -- Do Nothing
+            end
+        end
+    end
+
+    -- Battlegrounds
     EVENT_MANAGER:UnregisterForEvent(S2W.name, EVENT_BATTLEGROUND_KILL)
-    S2W:Trace(2, "Unregistering effects")
 end
 
 function S2W.Tracking.DidSpin(_, changeType, _, effectName, unitTag, _, _,
@@ -115,7 +131,7 @@ end
 function _AvAWin(eventID, result, isError, abilityName, _, _, sourceName, sourceType, targetName, targetType, _, _, _, _, _, _, abilityId)
 
     -- Only count player wins
-    if sourceType == COMBAT_UNIT_TYPE_PLAYER or sourceName ~= targetName then
+    if sourceType == COMBAT_UNIT_TYPE_PLAYER and sourceName ~= targetName then
         S2W:Trace(2, zo_strformat("AVA Win: <<1>> killed <<2>> with <<3>> (<<4>>)", sourceName, targetName, abilityName, abilityId))
         S2W.Tracking.DidWin()
     else
@@ -141,12 +157,12 @@ function _BGWin(_, killedPlayerCharacterName, _, _, _, _, _, battlegroundKillTyp
     if battlegroundKillType ~= BATTLEGROUND_KILL_TYPE_KILLING_BLOW then return end
 
     -- Only count Spin-based wins
-    if killingAbilityId == SPIN2WIN_ABILITY_ID or
-            killingAbilityId == WHIRLWIND_ABILITY_ID or
-            killingAbilityId == WHIRLING_BLADES_ABILITY_ID then
+    if killingAbilityId == IDs.STEEL_TORNADO.ABILITY or
+            killingAbilityId == IDs.WHIRLWIND.ABILITY or
+            killingAbilityId == IDs.WHIRLING_BLADES.ABILITY then
         S2W:Trace(2, zo_strformat("BG Win: On <<1>> with <<2>> (<<3>>)", killedPlayerCharacterName, GetAbilityName(killingAbilityId), killingAbilityId))
         S2W.Tracking.DidWin()
-    else 
+    else
         S2W:Trace(2, zo_strformat("BG No-Spin KB: <<1>> (<<2>>)", GetAbilityName(killingAbilityId), killingAbilityId))
         return
     end
