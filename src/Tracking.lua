@@ -131,7 +131,7 @@ end
 function _AvAWin(eventID, result, isError, abilityName, _, _, sourceName, sourceType, targetName, targetType, _, _, _, _, _, _, abilityId)
 
     -- Only count player wins
-    if sourceType == COMBAT_UNIT_TYPE_PLAYER or sourceName ~= targetName then
+    if sourceType == COMBAT_UNIT_TYPE_PLAYER and sourceName ~= targetName then
         S2W:Trace(2, zo_strformat("AVA Win: <<1>> killed <<2>> with <<3>> (<<4>>)", sourceName, targetName, abilityName, abilityId))
         S2W.Tracking.DidWin()
     else
