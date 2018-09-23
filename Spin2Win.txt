@@ -1,5 +1,5 @@
 ## Title: Spin2Win
-## APIVersion: 100024
+## APIVersion: 100024 100025
 ## SavedVariables: Spin2WinVariables
 ## Description: See how much spinning and winning you did!
 ## Version: 1.0.4_Beta
