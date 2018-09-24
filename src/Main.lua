@@ -49,7 +49,8 @@ function S2W.Initialize(event, addonName)
         S2W:Trace(1, "Setting debug value to saved: " .. S2W.saved.debugMode)
     end
 
-    SLASH_COMMANDS[S2W.slash] = S2W.SlashCommand
+    SLASH_COMMANDS[S2W.slash] = S2W.UI.SlashCommand
+    SLASH_COMMANDS['/s2wreport'] = S2W.UI.Report
 
     S2W.Tracking.RegisterEvents()
     S2W.UI.Draw()

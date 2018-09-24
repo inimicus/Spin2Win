@@ -235,7 +235,7 @@ function S2W.UI.Position.Set(left, top)
     S2W.Container:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, left, top)
 end
 
-function S2W.SlashCommand(command)
+function S2W.UI.SlashCommand(command)
     -- Debug Options ----------------------------------------------------------
     if command == "debug 0" then
         d(S2W.prefix .. "Setting debug level to 0 (Off)")
@@ -254,8 +254,62 @@ function S2W.SlashCommand(command)
         S2W.debugMode = 3
         S2W.saved.debugMode = 3
 
+    -- Modes ------------------------------------------------------------------
+    elseif command == "mode session" then
+        d(S2W.prefix .. "Setting display mode to Session")
+        S2W.saved.mode = 1
+        S2W.UI.Update(false)
+    elseif command == "mode character" then
+        d(S2W.prefix .. "Setting display mode to Character")
+        S2W.saved.mode = 2
+        S2W.UI.Update(false)
+    elseif command == "mode account" then
+        d(S2W.prefix .. "Setting display mode to Account")
+        S2W.saved.mode = 3
+        S2W.UI.Update(false)
+
+    -- Reporting---------------------------------------------------------------
+    elseif command == "report" then
+        S2W.UI.Report(command)
+
     -- Default ----------------------------------------------------------------
     else
         d(S2W.prefix .. "Command not recognized!")
     end
 end
+
+function S2W.UI.Report(command)
+    if command == "" or command == "report" then
+
+        -- Handle nan or negative, change to zero
+        local sessionRatio = S2W.UI.Wins / S2W.UI.Spins
+        if sessionRatio ~= sessionRatio or sessionRatio < 0 then
+            sessionRatio = 0
+        end
+
+        local lifetimeRatio = S2W.savedCharacter.wins / S2W.savedCharacter.spins
+        if lifetimeRatio ~= lifetimeRatio or lifetimeRatio < 0 then
+            lifetimeRatio = 0
+        end
+
+        StartChatInput(zo_strformat("*** Spin2Win Report *** Spins: <<1>> | Wins: <<2>> | Ratio: <<3>> | Lifetime Spins: <<4>> | Lifetime Wins: <<5>> | Lifetime Ratio: <<6>>",
+            formatThousands(S2W.UI.Spins), formatThousands(S2W.UI.Wins), string.format("%.2f", sessionRatio),
+            formatThousands(S2W.savedCharacter.spins), formatThousands(S2W.savedCharacter.wins), string.format("%.2f", lifetimeRatio)))
+
+    elseif command == "account" or command == "report account" then
+
+        -- Handle nan or negative, change to zero
+        local accountRatio = S2W.saved.wins / S2W.saved.spins
+        if accountRatio ~= accountRatio or accountRatio < 0 then
+            accountRatio = 0
+        end
+
+        StartChatInput(zo_strformat("*** Spin2Win Report - Account-wide *** Spins: <<1>> | Wins: <<2>> | Ratio: <<3>>",
+            formatThousands(S2W.saved.spins), formatThousands(S2W.saved.wins), string.format("%.2f", accountRatio)))
+
+    -- Default ----------------------------------------------------------------
+    else
+        d(S2W.prefix .. "Command not recognized!")
+    end
+end
+
