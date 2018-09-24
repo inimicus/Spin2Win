@@ -41,6 +41,7 @@ function S2W.Initialize(event, addonName)
     EVENT_MANAGER:UnregisterForEvent(S2W.name, EVENT_ADD_ON_LOADED)
 
     S2W.saved = ZO_SavedVars:NewAccountWide("Spin2WinVariables", S2W.dbVersion, nil, S2W:GetDefaults())
+    S2W.savedCharacter = ZO_SavedVars:New("Spin2WinVariables", S2W.dbVersion, nil, S2W:GetCharacterDefaults())
 
     -- Use saved debugMode value if the above value has not been changed
     if S2W.debugMode == 0 then
@@ -53,6 +54,8 @@ function S2W.Initialize(event, addonName)
     S2W.Tracking.RegisterEvents()
     S2W.UI.Draw()
     S2W.UI.ToggleHUD()
+
+    S2W.UI.Update(false)
     S2W:Trace(2, "Finished Initialize()")
 end
 

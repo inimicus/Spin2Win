@@ -6,9 +6,13 @@
 -- Interface.lua
 -- -----------------------------------------------------------------------------
 
-
 S2W.UI = {}
 S2W.UI.Position = {}
+S2W.UI.Spins = 0
+S2W.UI.Wins = 0
+S2W.UI.MODE_SESSION = 1
+S2W.UI.MODE_CHARACTER = 2
+S2W.UI.MODE_ACCOUNT = 3
 
 function S2W.UI.Draw()
     local c = WINDOW_MANAGER:CreateTopLevelWindow("S2WContainer")
@@ -90,14 +94,71 @@ function S2W.UI.Draw()
     S2W:Trace(2, "Finished DrawUI()")
 end
 
-function S2W.UI.UpdateSpins(spins)
-    local spinOut = formatThousands(spins)
-    S2W.SpinsCount:SetText(spinOut)
+function S2W.UI.Update(shouldIncrement)
+    S2W.UI.UpdateSpins(shouldIncrement)
+    S2W.UI.UpdateWins(shouldIncrement)
 end
 
-function S2W.UI.UpdateWins(wins)
-    local winOut = formatThousands(wins)
-    S2W.WinsCount:SetText(winOut)
+function S2W.UI.UpdateSpins(shouldIncrement)
+
+    -- If we should increment or just update display (e.g. changing modes)
+    -- Not set and true increment, false does not
+    if shouldIncrement == nil or shouldIncrement ~= false then
+        -- Increment saved spins
+        S2W.UI.Spins = S2W.UI.Spins + 1
+        S2W.saved.spins = S2W.saved.spins + 1
+        S2W.savedCharacter.spins = S2W.savedCharacter.spins + 1
+    end
+
+    S2W:Trace(1, zo_strformat("Spins - Session: <<1>> Character: <<2>> Account: <<3>>", S2W.UI.Spins, S2W.savedCharacter.spins, S2W.saved.spins))
+
+    -- Set based on mode
+    if S2W.saved.mode == S2W.UI.MODE_ACCOUNT then
+        spins = S2W.saved.spins
+    elseif S2W.saved.mode == S2W.UI.MODE_CHARACTER then
+        spins = S2W.savedCharacter.spins
+    elseif S2W.saved.mode == S2W.UI.MODE_SESSION then
+        spins = S2W.UI.Spins
+    end
+
+    -- Update Display
+    if spins == 0 or spins == nil then
+        S2W.SpinsCount:SetText('--')
+    else
+        local spinOut = formatThousands(spins)
+        S2W.SpinsCount:SetText(spinOut)
+    end
+end
+
+function S2W.UI.UpdateWins(shouldIncrement)
+
+    -- If we should increment or just update display (e.g. changing modes)
+    -- Not set and true increment, false does not
+    if shouldIncrement == nil or shouldIncrement ~= false then
+        -- Increment saved wins
+        S2W.UI.Wins = S2W.UI.Wins + 1
+        S2W.saved.wins = S2W.saved.wins + 1
+        S2W.savedCharacter.wins = S2W.savedCharacter.wins + 1
+    end
+
+    S2W:Trace(1, zo_strformat("Wins - Session: <<1>> Character: <<2>> Account: <<3>>", S2W.UI.Wins, S2W.savedCharacter.wins, S2W.saved.wins))
+
+    -- Set based on mode
+    if S2W.saved.mode == S2W.UI.MODE_ACCOUNT then
+        wins = S2W.saved.wins
+    elseif S2W.saved.mode == S2W.UI.MODE_CHARACTER then
+        wins = S2W.savedCharacter.wins
+    elseif S2W.saved.mode == S2W.UI.MODE_SESSION then
+        wins = S2W.UI.Wins
+    end
+
+    -- Update Display
+    if wins == 0 or wins == nil then
+        S2W.WinsCount:SetText('--')
+    else 
+        local winOut = formatThousands(wins)
+        S2W.WinsCount:SetText(winOut)
+    end
 end
 
 function toggleDraggable(state)

@@ -7,8 +7,6 @@
 -- -----------------------------------------------------------------------------
 
 S2W.Tracking = {}
-S2W.Tracking.SpinCount = 0
-S2W.Tracking.WinCount = 0
 
 local IDs = {
     STEEL_TORNADO = {
@@ -101,11 +99,9 @@ function S2W.Tracking.DidSpin(_, changeType, _, effectName, unitTag, _, _,
 
     if changeType ~= EFFECT_RESULT_GAINED then return end
 
-    S2W.Tracking.SpinCount = S2W.Tracking.SpinCount + 1
-    S2W:Trace(1, zo_strformat("Counted: <<1>> spins", S2W.Tracking.SpinCount))
     S2W:Trace(2, zo_strformat("<<1>> (<<2>>)", effectName, effectAbilityId))
 
-    S2W.UI.UpdateSpins(S2W.Tracking.SpinCount)
+    S2W.UI.UpdateSpins()
 
 end
 
@@ -170,8 +166,6 @@ function _BGWin(_, killedPlayerCharacterName, _, _, _, _, _, battlegroundKillTyp
 end
 
 function S2W.Tracking.DidWin()
-    S2W.Tracking.WinCount = S2W.Tracking.WinCount + 1
-    S2W:Trace(1, zo_strformat("Counted <<1>> wins", S2W.Tracking.WinCount))
-    S2W.UI.UpdateWins(S2W.Tracking.WinCount)
+    S2W.UI.UpdateWins()
 end
 
