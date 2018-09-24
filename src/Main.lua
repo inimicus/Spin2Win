@@ -8,7 +8,7 @@
 
 S2W             = {}
 S2W.name        = "Spin2Win"
-S2W.version     = "1.0.5"
+S2W.version     = "1.1.0"
 S2W.dbVersion   = 1
 S2W.slash       = "/s2w"
 S2W.prefix      = "[S2W] "
