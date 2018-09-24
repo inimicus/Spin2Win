@@ -174,6 +174,8 @@ function toggleDraggable(state)
 end
 
 function formatThousands(n)
+    if n == nil then return 0 end
+
     -- Thanks to http://lua-users.org/wiki/FormattingNumbers
     local left, num, right = string.match(n,'^([^%d]*%d)(%d*)(.-)$')
     return left..(num:reverse():gsub('(%d%d%d)','%1,'):reverse())..right
