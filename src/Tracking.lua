@@ -65,6 +65,10 @@ function S2W.Tracking.RegisterEvents()
     EVENT_MANAGER:AddFilterForEvent(S2W.name, EVENT_BATTLEGROUND_KILL,
         REGISTER_FILTER_UNIT_TAG, COMBAT_UNIT_TYPE_PLAYER)
 
+	-- Hide/Show on Death/Alive
+    EVENT_MANAGER:RegisterForEvent(S2W.name, EVENT_PLAYER_ALIVE, S2W.OnAlive)
+    EVENT_MANAGER:RegisterForEvent(S2W.name, EVENT_PLAYER_DEAD, S2W.OnDeath)
+
 end
 
 function S2W.Tracking.UnregisterEvents()
@@ -92,6 +96,18 @@ function S2W.Tracking.UnregisterEvents()
 
     -- Battlegrounds
     EVENT_MANAGER:UnregisterForEvent(S2W.name, EVENT_BATTLEGROUND_KILL)
+
+    -- Death state
+    EVENT_MANAGER:UnregisterForEvent(S2W.name, EVENT_PLAYER_ALIVE)
+    EVENT_MANAGER:UnregisterForEvent(S2W.name, EVENT_PLAYER_DEAD)
+end
+
+function S2W.OnAlive()
+    S2W.UI.Show(true)
+end
+
+function S2W.OnDeath()
+    S2W.UI.Show(false)
 end
 
 function S2W.Tracking.DidSpin(_, changeType, _, effectName, unitTag, _, _,
