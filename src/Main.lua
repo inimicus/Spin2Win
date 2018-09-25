@@ -53,6 +53,7 @@ function S2W.Initialize(event, addonName)
     SLASH_COMMANDS['/s2wreport'] = S2W.UI.Report
 
     S2W.Tracking.RegisterEvents()
+    S2W:InitSettings()
     S2W.UI.Draw()
     S2W.UI.ToggleHUD()
 

@@ -6,6 +6,7 @@
 ## Author: |cFFCCCC@g4rr3t|r
 
 src/Main.lua
+src/Settings.lua
 src/Defaults.lua
 src/Interface.lua
 src/Tracking.lua
