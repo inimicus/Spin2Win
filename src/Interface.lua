@@ -292,7 +292,7 @@ function S2W.UI.Report(command)
             lifetimeRatio = 0
         end
 
-        StartChatInput(zo_strformat("*** Spin2Win Report *** Spins: <<1>> | Wins: <<2>> | Ratio: <<3>> | Lifetime Spins: <<4>> | Lifetime Wins: <<5>> | Lifetime Ratio: <<6>>",
+        StartChatInput(zo_strformat("*** Spin2Win Report *** Spins: <<1>> - Wins: <<2>> - Ratio: <<3>> - Lifetime Spins: <<4>> - Lifetime Wins: <<5>> - Lifetime Ratio: <<6>>",
             formatThousands(S2W.UI.Spins), formatThousands(S2W.UI.Wins), string.format("%.2f", sessionRatio),
             formatThousands(S2W.savedCharacter.spins), formatThousands(S2W.savedCharacter.wins), string.format("%.2f", lifetimeRatio)))
 
@@ -304,7 +304,7 @@ function S2W.UI.Report(command)
             accountRatio = 0
         end
 
-        StartChatInput(zo_strformat("*** Spin2Win Report - Account-wide *** Spins: <<1>> | Wins: <<2>> | Ratio: <<3>>",
+        StartChatInput(zo_strformat("*** Spin2Win Report - Account-wide *** Spins: <<1>> - Wins: <<2>> - Ratio: <<3>>",
             formatThousands(S2W.saved.spins), formatThousands(S2W.saved.wins), string.format("%.2f", accountRatio)))
 
     -- Default ----------------------------------------------------------------
