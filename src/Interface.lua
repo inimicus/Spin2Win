@@ -155,7 +155,7 @@ function S2W.UI.UpdateWins(shouldIncrement)
     -- Update Display
     if wins == 0 or wins == nil then
         S2W.WinsCount:SetText('--')
-    else 
+    else
         local winOut = formatThousands(wins)
         S2W.WinsCount:SetText(winOut)
     end
@@ -166,7 +166,7 @@ function toggleDraggable(state)
         if state then
             WINDOW_MANAGER:SetMouseCursor(12)
             S2W.Background:SetCenterColor(0.5, 0.5, 0.5, 0.25)
-        else 
+        else
             WINDOW_MANAGER:SetMouseCursor(0)
             S2W.Background:SetCenterColor(0.1, 0.1, 0.1, 0.25)
         end
