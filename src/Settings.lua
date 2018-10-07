@@ -6,6 +6,8 @@
 -- Settings.lua
 -- -----------------------------------------------------------------------------
 
+S2W.Settings = {}
+
 local LAM = LibStub("LibAddonMenu-2.0")
 
 local panelData = {
@@ -26,39 +28,54 @@ local optionsTable = {
     [2] = {
         type = "button",
         name = "Reset Session",
-        func = function() end,
-        tooltip = "Reset session statistics (since the last login or reload UI).", -- string id or function returning a string (optional)
+        func = function() S2W.Settings:DoResetSession() end,
+        tooltip = "Reset session statistics (since the last login or reload UI).",
+        warning = "Resetting session data sets statistics since login or last UI load to zero. It does not affect per-character or account-wide data. This cannot be undone.",
+        isDangerous = true,
         width = "half",
     },
     [3] = {
         type = "button",
         name = "Reset Lifetime",
-        func = function() end,
+        func = function() S2W.Settings:DoResetCharacter() end,
         tooltip = "Reset character lifetime statistics to zero.",
+        warning = "Resetting character data sets statistics for this character to zero. It does not affect session or account data. This cannot be undone.",
+        isDangerous = true,
         width = "half",
     },
     [4] = {
         type = "button",
         name = "Reset Account",
-        func = function() end,
-        tooltip = "Reset account lifetime data to zero. Does not affect per-character data.", -- string id or function returning a string (optional)
-        warning = "Does not reset data for any character",
+        func = function() S2W.Settings:DoResetAccount() end,
+        tooltip = "Reset account lifetime data to zero. Does not affect per-character data.",
+        warning = "Resetting account data sets statistics for this account to zero. It does not affect session or per-character data. This cannot be undone.",
+        isDangerous = true,
         width = "half",
     },
     [5] = {
+        type = "button",
+        name = "Reset All Data",
+        func = function() S2W.Settings:DoResetAll() end,
+        tooltip = "Reset all data to zero. Except other characters.",
+        warning = "Resetting all data sets statistics for the session, current character, and account to zero. It does not affect other character data, so per-character statistics will be kept.",
+        isDangerous = true,
+        width = "half",
+    },
+    [6] = {
         type = "header",
         name = "Counter",
         width = "full",
     },
-    [6] = {
+    [7] = {
         type = "dropdown",
         name = "Statistics Display",
         choices = {"Session", "Character Lifetime", "Account Lifetime"},
         choicesValues = {1, 2, 3},
-        getFunc = function() return 2 end,
-        setFunc = function(var) db.var = var doStuff() end,
+        getFunc = function() return S2W.Settings:GetMode() end,
+        setFunc = function(mode) S2W.Settings:SetMode(mode) end,
         tooltip = "Change which statistics are displayed in the main window",
-        choicesTooltips = {"Statistics since logging in or reloading the UI.", "Lifetime stats for the current character.", "Lifetime stats of all characters in the account combined."},
+        -- Tooltips appear to be bugged and don't properly disappear.
+        --choicesTooltips = {"Statistics since logging in or reloading the UI.", "Lifetime stats for the current character.", "Lifetime stats of all characters in the account combined."},
         width = "full",
         scrollable = false,
     },
@@ -68,59 +85,39 @@ local optionsTable = {
 -- Helper functions to set/get settings
 -- -----------------------------------------------------------------------------
 
--- Locked State
-function ToggleLocked(control)
-    MOON.preferences.unlocked = not MOON.preferences.unlocked
-    MOON.Container:SetMovable(MOON.preferences.unlocked)
-    if MOON.preferences.unlocked then
-        control:SetText("Lock")
-    else
-        control:SetText("Unlock")
-    end
+-- Reset Data
+function S2W.Settings:DoResetSession()
+    S2W.UI.Spins = 0
+    S2W.UI.Wins = 0
+    S2W.UI.Update(false)
 end
 
--- Force Showing
-function ForceShow(control)
-    MOON.ForceShow = not MOON.ForceShow
-    if MOON.ForceShow then
-        control:SetText("Hide")
-        MOON.HUDHidden = false
-        MOON.Container:SetHidden(false)
-        MOON.UpdateStacks(5)
-    else
-        control:SetText("Show")
-        MOON.HUDHidden = true
-        MOON.Container:SetHidden(true)
-        MOON.UpdateStacks(0)
-    end
+function S2W.Settings:DoResetCharacter()
+    S2W.savedCharacter.spins = 0
+    S2W.savedCharacter.wins = 0
+    S2W.UI.Update(false)
 end
 
--- Sizing
-function SetSize(value)
-    MOON.preferences.size = value
-    MOON.Container:SetDimensions(value, value)
-    MOON.Texture:SetDimensions(value, value)
-    MOON.SetFontSize(value)
+function S2W.Settings:DoResetAccount()
+    S2W.saved.spins = 0
+    S2W.saved.wins = 0
+    S2W.UI.Update(false)
 end
 
-function GetSize()
-    return MOON.preferences.size
+function S2W.Settings:DoResetAll()
+    S2W.Settings:DoResetSession()
+    S2W.Settings:DoResetCharacter()
+    S2W.Settings:DoResetAccount()
 end
 
--- Show In Combat
-function SetHideOutOfCombat(value)
-    MOON.preferences.hideOOC = value
-
-    if value then
-        MOON.RegisterCombatEvent()
-    else
-        MOON.UnregisterCombatEvent()
-    end
-
+-- Mode
+function S2W.Settings:SetMode(mode)
+    S2W.saved.mode = mode
+    S2W.UI.Update(false)
 end
 
-function GetHideOutOfCombat()
-    return MOON.preferences.hideOOC
+function S2W.Settings:GetMode(mode)
+    return S2W.saved.mode
 end
 
 -- -----------------------------------------------------------------------------
