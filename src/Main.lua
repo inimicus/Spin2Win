@@ -15,6 +15,7 @@ S2W.prefix      = "[S2W] "
 S2W.enabled     = false
 S2W.HUDHidden   = false
 S2W.ForceShow   = false
+S2W.isDead      = false
 
 -- -----------------------------------------------------------------------------
 -- Level of debug output
