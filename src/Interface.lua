@@ -15,81 +15,105 @@ S2W.UI.MODE_CHARACTER = 2
 S2W.UI.MODE_ACCOUNT = 3
 
 function S2W.UI.Draw()
-    local c = WINDOW_MANAGER:CreateTopLevelWindow("S2WContainer")
-    c:SetClampedToScreen(true)
-    c:SetDimensions(200, 50)
-    c:ClearAnchors()
-    c:SetMouseEnabled(true)
-    c:SetAlpha(1)
-    c:SetMovable(S2W.saved.unlocked)
-    c:SetHidden(false)
-    c:SetHandler("OnMoveStop", function(...) S2W.UI.Position.Save() end)
-    c:SetHandler("OnMouseEnter", function(...) toggleDraggable(true) end)
-    c:SetHandler("OnMouseExit", function(...) toggleDraggable(false) end)
+    local container = WINDOW_MANAGER:GetControlByName("S2WContainer")
 
-    local bg = WINDOW_MANAGER:CreateControl("S2WBackdrop", c, CT_BACKDROP)
-    bg:SetEdgeColor(0.1, 0.1, 0.1, 0.25)
-    bg:SetEdgeTexture(nil, 1, 1, 0, nil)
-    bg:SetCenterColor(0.1, 0.1, 0.1, 0.25)
-    bg:SetAnchor(TOPLEFT, c, TOPLEFT, 0, 0)
-    bg:SetDimensions(200, 50)
-    bg:SetAlpha(1)
-    bg:SetDrawLayer(0)
+    if S2W.enabled then
 
-    local r = WINDOW_MANAGER:CreateControl("S2WTexture", c, CT_TEXTURE)
-    r:SetTexture('/esoui/art/icons/ability_dualwield_005_b.dds')
-    r:SetDimensions(50, 50)
-    r:SetAnchor(TOPLEFT, c, TOPLEFT, 0, 0)
+        -- Draw UI and create context if it doesn't exist
+        if container == nil then
 
-    local sl = WINDOW_MANAGER:CreateControl("S2WSpinsLabel", c, CT_LABEL)
-    sl:SetAnchor(TOPLEFT, c, TOPLEFT, 55, 2)
-    sl:SetDimensions(45, 25)
-    sl:SetColor(0.68, 0.96, 0.49, 1)
-    sl:SetFont("$(MEDIUM_FONT)|18|soft-shadow-thick")
-    sl:SetVerticalAlignment(CENTER)
-    sl:SetHorizontalAlignment(RIGHT)
-    sl:SetPixelRoundingEnabled(true)
-    sl:SetText("Spins:")
+            local c = WINDOW_MANAGER:CreateTopLevelWindow("S2WContainer")
+            c:SetClampedToScreen(true)
+            c:SetDimensions(200, 50)
+            c:ClearAnchors()
+            c:SetMouseEnabled(true)
+            c:SetAlpha(1)
+            c:SetMovable(S2W.saved.unlocked)
+            if S2W.HUDHidden then
+                c:SetHidden(true)
+            else
+                c:SetHidden(false)
+            end
+            c:SetHandler("OnMoveStop", function(...) S2W.UI.Position.Save() end)
+            c:SetHandler("OnMouseEnter", function(...) toggleDraggable(true) end)
+            c:SetHandler("OnMouseExit", function(...) toggleDraggable(false) end)
 
-    local wl = WINDOW_MANAGER:CreateControl("S2WWinsLabel", c, CT_LABEL)
-    wl:SetAnchor(TOPLEFT, c, TOPLEFT, 55, 25)
-    wl:SetDimensions(45, 25)
-    wl:SetColor(0.68, 0.96, 0.49, 1)
-    wl:SetFont("$(MEDIUM_FONT)|18|soft-shadow-thick")
-    wl:SetVerticalAlignment(CENTER)
-    wl:SetHorizontalAlignment(RIGHT)
-    wl:SetPixelRoundingEnabled(true)
-    wl:SetText("Wins:")
+            local bg = WINDOW_MANAGER:CreateControl("S2WBackdrop", c, CT_BACKDROP)
+            bg:SetEdgeColor(0.1, 0.1, 0.1, 0.25)
+            bg:SetEdgeTexture(nil, 1, 1, 0, nil)
+            bg:SetCenterColor(0.1, 0.1, 0.1, 0.25)
+            bg:SetAnchor(TOPLEFT, c, TOPLEFT, 0, 0)
+            bg:SetDimensions(200, 50)
+            bg:SetAlpha(1)
+            bg:SetDrawLayer(0)
 
-    local sc = WINDOW_MANAGER:CreateControl("S2WSpinsCount", c, CT_LABEL)
-    sc:SetAnchor(TOPLEFT, c, TOPLEFT, 105, 2)
-    sc:SetDimensions(105, 25)
-    sc:SetColor(1, 1, 1, 1)
-    sc:SetFont("$(MEDIUM_FONT)|18|soft-shadow-thick")
-    sc:SetVerticalAlignment(CENTER)
-    sc:SetHorizontalAlignment(RIGHT)
-    sc:SetPixelRoundingEnabled(true)
-    sc:SetText("--")
+            local r = WINDOW_MANAGER:CreateControl("S2WTexture", c, CT_TEXTURE)
+            r:SetTexture('/esoui/art/icons/ability_dualwield_005_b.dds')
+            r:SetDimensions(50, 50)
+            r:SetAnchor(TOPLEFT, c, TOPLEFT, 0, 0)
 
-    local wc = WINDOW_MANAGER:CreateControl("S2WWinsCount", c, CT_LABEL)
-    wc:SetAnchor(TOPLEFT, c, TOPLEFT, 105, 25)
-    wc:SetDimensions(105, 25)
-    wc:SetColor(1, 1, 1, 1)
-    wc:SetFont("$(MEDIUM_FONT)|18|soft-shadow-thick")
-    wc:SetVerticalAlignment(CENTER)
-    wc:SetHorizontalAlignment(RIGHT)
-    wc:SetPixelRoundingEnabled(true)
-    wc:SetText("--")
+            local sl = WINDOW_MANAGER:CreateControl("S2WSpinsLabel", c, CT_LABEL)
+            sl:SetAnchor(TOPLEFT, c, TOPLEFT, 55, 2)
+            sl:SetDimensions(45, 25)
+            sl:SetColor(0.68, 0.96, 0.49, 1)
+            sl:SetFont("$(MEDIUM_FONT)|18|soft-shadow-thick")
+            sl:SetVerticalAlignment(CENTER)
+            sl:SetHorizontalAlignment(RIGHT)
+            sl:SetPixelRoundingEnabled(true)
+            sl:SetText("Spins:")
 
-    S2W.Container = c
-    S2W.Background = bg
-    S2W.Texture = r
-    S2W.SpinsLabel = sl
-    S2W.WinsLabel = sl
-    S2W.SpinsCount = sc
-    S2W.WinsCount = wc
+            local wl = WINDOW_MANAGER:CreateControl("S2WWinsLabel", c, CT_LABEL)
+            wl:SetAnchor(TOPLEFT, c, TOPLEFT, 55, 25)
+            wl:SetDimensions(45, 25)
+            wl:SetColor(0.68, 0.96, 0.49, 1)
+            wl:SetFont("$(MEDIUM_FONT)|18|soft-shadow-thick")
+            wl:SetVerticalAlignment(CENTER)
+            wl:SetHorizontalAlignment(RIGHT)
+            wl:SetPixelRoundingEnabled(true)
+            wl:SetText("Wins:")
 
-    S2W.UI.Position.Set(S2W.saved.positionLeft, S2W.saved.positionTop)
+            local sc = WINDOW_MANAGER:CreateControl("S2WSpinsCount", c, CT_LABEL)
+            sc:SetAnchor(TOPLEFT, c, TOPLEFT, 105, 2)
+            sc:SetDimensions(105, 25)
+            sc:SetColor(1, 1, 1, 1)
+            sc:SetFont("$(MEDIUM_FONT)|18|soft-shadow-thick")
+            sc:SetVerticalAlignment(CENTER)
+            sc:SetHorizontalAlignment(RIGHT)
+            sc:SetPixelRoundingEnabled(true)
+            sc:SetText("--")
+
+            local wc = WINDOW_MANAGER:CreateControl("S2WWinsCount", c, CT_LABEL)
+            wc:SetAnchor(TOPLEFT, c, TOPLEFT, 105, 25)
+            wc:SetDimensions(105, 25)
+            wc:SetColor(1, 1, 1, 1)
+            wc:SetFont("$(MEDIUM_FONT)|18|soft-shadow-thick")
+            wc:SetVerticalAlignment(CENTER)
+            wc:SetHorizontalAlignment(RIGHT)
+            wc:SetPixelRoundingEnabled(true)
+            wc:SetText("--")
+
+            S2W.Container = c
+            S2W.Background = bg
+            S2W.SpinsCount = sc
+            S2W.WinsCount = wc
+
+            S2W.UI.Position.Set(S2W.saved.positionLeft, S2W.saved.positionTop)
+
+        -- Reuse context
+        else
+            if S2W.HUDHidden then
+                container:SetHidden(true)
+            else
+                container:SetHidden(false)
+            end
+        end
+
+    -- Disable display
+    else
+        if container ~= nil then
+            container:SetHidden(true)
+        end
+    end
 
     S2W:Trace(2, "Finished DrawUI()")
 end
@@ -100,6 +124,9 @@ function S2W.UI.Update(shouldIncrement)
 end
 
 function S2W.UI.UpdateSpins(shouldIncrement)
+
+    -- Do nothing if disabled
+    if not S2W.enabled then return end
 
     -- If we should increment or just update display (e.g. changing modes)
     -- Not set and true increment, false does not
@@ -131,6 +158,9 @@ function S2W.UI.UpdateSpins(shouldIncrement)
 end
 
 function S2W.UI.UpdateWins(shouldIncrement)
+
+    -- Do nothing if disabled
+    if not S2W.enabled then return end
 
     -- If we should increment or just update display (e.g. changing modes)
     -- Not set and true increment, false does not
@@ -187,12 +217,14 @@ function S2W.UI.ToggleHUD()
 
         -- Transitioning to a menu/non-HUD
         if newState == SCENE_HIDDEN and SCENE_MANAGER:GetNextScene():GetName() ~= "hudui" then
+            S2W.HUDHidden = true
             S2W:Trace(3, "Hiding HUD")
             S2W.UI.Show(false)
         end
 
         -- Transitioning to a HUD/non-menu
         if newState == SCENE_SHOWING then
+            S2W.HUDHidden = false
             S2W:Trace(3, "Showing HUD")
             S2W.UI.Show(true)
         end
@@ -203,18 +235,15 @@ end
 
 function S2W.UI.Show(shouldShow)
 
-    -- Don't change states if display should be forced to show
-    if S2W.ForceShow then
-        S2W.Container:SetHidden(false)
-        return
-    end
-
-    if (shouldShow) then
-        S2W.HUDHidden = false
-        S2W.Container:SetHidden(false)
-    else
-        S2W.HUDHidden = true
-        S2W.Container:SetHidden(true)
+    local context = WINDOW_MANAGER:GetControlByName("S2WContainer")
+    if context ~= nil then
+        if S2W.ForceShow then
+            context:SetHidden(false)
+        elseif (shouldShow and S2W.enabled and not S2W.HUDHidden and not S2W.isDead) then
+            context:SetHidden(false)
+        else
+            context:SetHidden(true)
+        end
     end
 end
 

@@ -7,92 +7,67 @@
 -- -----------------------------------------------------------------------------
 
 S2W.Tracking = {}
+local SKILL_LINE_DUAL_WIELD = 3
+local SKILL_WHIRLWIND = 4
 
-local IDs = {
-    STEEL_TORNADO = {
-        EFFECT = 39665,
-        ABILITY = 38861,
-    },
-    WHIRLWIND = {
-        EFFECT = 39620,
-        ABILITY = 28591,
-    },
-    WHIRLING_BLADES = {
-        EFFECT = 39666,
-        ABILITY = 38891,
-    },
+local IDs = {           -- Ability ID = Effect ID
+    [38861] = 39665,    -- Steel Tornado
+    [28591] = 39620,    -- Whirlwind
+    [38891] = 39666,    -- Whirling Blades
 }
 
+local function HotbarsUpdated()
+    S2W:Trace(2, "Hotbars Updated!")
+    S2W.Tracking.CheckSpinSlotted()
+end
+
 function S2W.Tracking.RegisterEvents()
-
     S2W:Trace(2, "Registering events")
+    EVENT_MANAGER:RegisterForEvent(S2W.name, EVENT_ACTION_SLOTS_ALL_HOTBARS_UPDATED, HotbarsUpdated)
+end
 
-    for morph, table in pairs(IDs) do
+function S2W.Tracking.UnregisterEvents()
+    S2W:Trace(2, "Unregistering events")
+    EVENT_MANAGER:UnregisterForEvent(S2W.name, EVENT_ACTION_SLOTS_ALL_HOTBARS_UPDATED)
+end
 
-        S2W:Trace(2, "Registering: " .. morph)
+function S2W.Tracking.RegisterEventsForId(abilityId)
 
-        for skillType, id in pairs(table) do
+    local effectId = IDs[abilityId]
 
-            local name = zo_strformat("<<1>>_<<2>>_<<3>>", S2W.name, morph, skillType)
-            S2W:Trace(3, zo_strformat("Registering: <<1>> (<<2>>)", morph, id))
+    S2W:Trace(2, "Registering: " .. abilityId)
 
-            -- Register effects - Spins
-            if skillType == "EFFECT" then
-                EVENT_MANAGER:RegisterForEvent(name, EVENT_EFFECT_CHANGED, S2W.Tracking.DidSpin)
-                EVENT_MANAGER:AddFilterForEvent(name, EVENT_EFFECT_CHANGED,
-                    REGISTER_FILTER_ABILITY_ID,                 id,
-                    REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE,    COMBAT_UNIT_TYPE_PLAYER)
+    EVENT_MANAGER:RegisterForEvent(S2W.name .. '_' .. effectId, EVENT_EFFECT_CHANGED, S2W.Tracking.DidSpin)
+    EVENT_MANAGER:AddFilterForEvent(S2W.name .. '_' .. effectId, EVENT_EFFECT_CHANGED,
+        REGISTER_FILTER_ABILITY_ID,                 effectId,
+        REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE,    COMBAT_UNIT_TYPE_PLAYER)
 
-            -- Register abilities - Wins
-            elseif skillType == "ABILITY" then
-                EVENT_MANAGER:RegisterForEvent(name, EVENT_COMBAT_EVENT, _AvAWin)
-                EVENT_MANAGER:AddFilterForEvent(name, EVENT_COMBAT_EVENT,
-                    REGISTER_FILTER_ABILITY_ID,     id,
-                    REGISTER_FILTER_UNIT_TAG,       COMBAT_UNIT_TYPE_PLAYER,
-                    REGISTER_FILTER_IS_ERROR,       false,
-                    REGISTER_FILTER_COMBAT_RESULT,  ACTION_RESULT_KILLING_BLOW)
+    EVENT_MANAGER:RegisterForEvent(S2W.name .. '_' .. abilityId, EVENT_COMBAT_EVENT, _AvAWin)
+    EVENT_MANAGER:AddFilterForEvent(S2W.name .. '_' .. abilityId, EVENT_COMBAT_EVENT,
+        REGISTER_FILTER_ABILITY_ID,     abilityId,
+        REGISTER_FILTER_UNIT_TAG,       COMBAT_UNIT_TYPE_PLAYER,
+        REGISTER_FILTER_IS_ERROR,       false,
+        REGISTER_FILTER_COMBAT_RESULT,  ACTION_RESULT_KILLING_BLOW)
 
-            -- Not a valid skillType
-            else
-                -- Do nothing
-            end
-
-        end
-    end
 
     -- Battlegrounds KBs
     EVENT_MANAGER:RegisterForEvent(S2W.name, EVENT_BATTLEGROUND_KILL, _BGWin)
     EVENT_MANAGER:AddFilterForEvent(S2W.name, EVENT_BATTLEGROUND_KILL,
         REGISTER_FILTER_UNIT_TAG, COMBAT_UNIT_TYPE_PLAYER)
 
-	-- Hide/Show on Death/Alive
+    -- Hide/Show on Death/Alive
     EVENT_MANAGER:RegisterForEvent(S2W.name, EVENT_PLAYER_ALIVE, S2W.OnAlive)
     EVENT_MANAGER:RegisterForEvent(S2W.name, EVENT_PLAYER_DEAD, S2W.OnDeath)
 
 end
 
-function S2W.Tracking.UnregisterEvents()
-    for morph, table in pairs(S2W.Tracking.IDs) do
-        S2W:Trace(2, "Unregistering: " .. morph)
+function S2W.Tracking.UnregisterEventsForId(abilityId)
+    S2W:Trace(2, "Unregistering: " .. abilityId)
 
-        for skillType, id in pairs(table) do
-            local name = zo_strformat("<<1>>_<<2>>_<<3>>", S2W.name, morph, skillType)
-            S2W:Trace(3, zo_strformat("Unregistering: <<1>> (<<2>>)", morph, id))
+    local effectId = IDs[abilityId]
 
-            -- Unregister effects
-            if skillType == "EFFECT" then
-                EVENT_MANAGER:UnregisterForEvent(name, EVENT_EFFECT_CHANGED)
-
-            -- Unregister abilities
-            elseif skillType == "ABILITY" then
-                EVENT_MANAGER:UnregisterForEvent(name, EVENT_COMBAT_EVENT)
-
-            -- Not a valid skillType
-            else
-                -- Do Nothing
-            end
-        end
-    end
+    EVENT_MANAGER:UnregisterForEvent(S2W.name .. '_' .. effectId, EVENT_EFFECT_CHANGED)
+    EVENT_MANAGER:UnregisterForEvent(S2W.name .. '_' .. abilityId, EVENT_COMBAT_EVENT)
 
     -- Battlegrounds
     EVENT_MANAGER:UnregisterForEvent(S2W.name, EVENT_BATTLEGROUND_KILL)
@@ -103,11 +78,66 @@ function S2W.Tracking.UnregisterEvents()
 end
 
 function S2W.OnAlive()
+    S2W.isDead = false
     S2W.UI.Show(true)
 end
 
 function S2W.OnDeath()
+    S2W.isDead = true
     S2W.UI.Show(false)
+end
+
+function S2W.Tracking.CheckSpinSlotted()
+    local skillPurchased = IsSkillAbilityPurchased(SKILL_TYPE_WEAPON, SKILL_LINE_DUAL_WIELD, SKILL_WHIRLWIND)
+
+    -- Check if skill is purchased
+    -- Bail if not purchased and not enabled
+    -- If not purchased but enabled, then suspect respec and fall through
+    if not skillPurchased and not S2W.enabled then return end
+
+    local abilityId = GetSkillAbilityId(SKILL_TYPE_WEAPON, SKILL_LINE_DUAL_WIELD, SKILL_WHIRLWIND)
+    local slottedPosition = S2W.Tracking.GetSlottedPosition(abilityId)
+
+    -- If spin is slotted
+    if slottedPosition ~= nil then
+        if not S2W.enabled then
+            S2W:Trace(1, "Enabling S2W")
+            S2W.enabled = true
+            S2W.Tracking.RegisterEventsForId(abilityId)
+            S2W.UI.Draw()
+
+            local textureControl = WINDOW_MANAGER:GetControlByName("S2WTexture")
+            local texture = GetAbilityIcon(abilityId)
+            textureControl:SetTexture(texture)
+
+            S2W.UI.Update(false)
+        else
+            S2W:Trace(1, "Already enabled")
+        end
+
+    -- Spin not slotted
+    else
+        if S2W.enabled then
+            S2W:Trace(1, "Disabling S2W")
+            S2W.enabled = false
+            S2W.Tracking.UnregisterEventsForId(abilityId)
+            S2W.UI.Draw()
+        else
+            S2W:Trace(1, "Already disabled")
+        end
+    end
+end
+
+function S2W.Tracking.GetSlottedPosition(abilityId)
+
+    for x = 3, 7 do
+        local slotPrimary = GetSlotBoundId(x, HOTBAR_CATEGORY_PRIMARY)
+        if slotPrimary == abilityId then return slotPrimary end
+
+        local slotBackup = GetSlotBoundId(x, HOTBAR_CATEGORY_BACKUP)
+        if slotBackup == abilityId then return slotBackup end
+    end
+
 end
 
 function S2W.Tracking.DidSpin(_, changeType, _, effectName, unitTag, _, _,
@@ -121,25 +151,6 @@ function S2W.Tracking.DidSpin(_, changeType, _, effectName, unitTag, _, _,
 
 end
 
---EVENT_COMBAT_EVENT (
---  number eventCode,
---  ActionResult result,
---  boolean isError,
---  string abilityName,
---  number abilityGraphic,
---  ActionSlotType abilityActionSlotType,
---  string sourceName,
---  CombatUnitType sourceType,
---  string targetName,
---  CombatUnitType targetType,
---  number hitValue,
---  CombatMechanicType powerType,
---  DamageType damageType,
---  boolean log,
---  number sourceUnitId,
---  number targetUnitId,
---  number abilityId
---)
 function _AvAWin(eventID, result, isError, abilityName, _, _, sourceName, sourceType, targetName, targetType, _, _, _, _, _, _, abilityId)
 
     -- Only count player wins
@@ -152,17 +163,6 @@ function _AvAWin(eventID, result, isError, abilityName, _, _, sourceName, source
 
 end
 
---EVENT_BATTLEGROUND_KILL (
---  number eventCode,
---  string killedPlayerCharacterName,
---  string killedPlayerDisplayName,
---  BattlegroundAlliance killedPlayerBattlegroundAlliance,
---  string killingPlayerCharacterName,
---  string killingPlayerDisplayName,
---  BattlegroundAlliance killingPlayerBattlegroundAlliance,
---  BattlegroundKillType battlegroundKillType,
---  number killingAbilityId
---)
 function _BGWin(_, killedPlayerCharacterName, _, _, _, _, _, battlegroundKillType, killingAbilityId)
 
     -- Ignore all but killing blows
