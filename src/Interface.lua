@@ -7,12 +7,88 @@
 -- -----------------------------------------------------------------------------
 
 S2W.UI = {}
-S2W.UI.Position = {}
-S2W.UI.Spins = 0
-S2W.UI.Wins = 0
-S2W.UI.MODE_SESSION = 1
-S2W.UI.MODE_CHARACTER = 2
-S2W.UI.MODE_ACCOUNT = 3
+
+-- Session Storage
+local session = {
+    spins = 0,
+    wins = 0,
+}
+
+-- -----------------------------------------------------------------------------
+-- Local functions
+-- -----------------------------------------------------------------------------
+
+local function _FormatThousands(n)
+    if n == nil then return 0 end
+    return FormatIntegerWithDigitGrouping(n, ',', 3)
+end
+
+local function _ToggleDraggable(state)
+    if S2W.saved.unlocked then
+        if state then
+            WINDOW_MANAGER:SetMouseCursor(12)
+            S2W.Background:SetCenterColor(0.5, 0.5, 0.5, 0.25)
+        else
+            WINDOW_MANAGER:SetMouseCursor(0)
+            S2W.Background:SetCenterColor(0.1, 0.1, 0.1, 0.25)
+        end
+    end
+end
+
+local function _SavePosition()
+    local top   = S2W.Container:GetTop()
+    local left  = S2W.Container:GetLeft()
+
+    S2W:Trace(2, "Saving position - Left: " .. left .. " Top: " .. top)
+
+    S2W.saved.positionLeft = left
+    S2W.saved.positionTop  = top
+end
+
+local function _SetPosition(left, top)
+    S2W:Trace(2, "Setting - Left: " .. left .. " Top: " .. top)
+    S2W.Container:ClearAnchors()
+    S2W.Container:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, left, top)
+end
+
+local function _Report(command)
+    if command == "" or command == "report" then
+
+        -- Handle nan or negative, change to zero
+        local sessionRatio = session.wins / session.spins
+        if sessionRatio ~= sessionRatio or sessionRatio < 0 then
+            sessionRatio = 0
+        end
+
+        local lifetimeRatio = S2W.savedCharacter.wins / S2W.savedCharacter.spins
+        if lifetimeRatio ~= lifetimeRatio or lifetimeRatio < 0 then
+            lifetimeRatio = 0
+        end
+
+        StartChatInput(zo_strformat("*** Spin2Win Report *** Spins: <<1>> - Wins: <<2>> - Ratio: <<3>> - Lifetime Spins: <<4>> - Lifetime Wins: <<5>> - Lifetime Ratio: <<6>>",
+            _FormatThousands(session.spins), _FormatThousands(session.wins), string.format("%.2f", sessionRatio),
+            _FormatThousands(S2W.savedCharacter.spins), _FormatThousands(S2W.savedCharacter.wins), string.format("%.2f", lifetimeRatio)))
+
+    elseif command == "account" or command == "report account" then
+
+        -- Handle nan or negative, change to zero
+        local accountRatio = S2W.saved.wins / S2W.saved.spins
+        if accountRatio ~= accountRatio or accountRatio < 0 then
+            accountRatio = 0
+        end
+
+        StartChatInput(zo_strformat("*** Spin2Win Report - Account-wide *** Spins: <<1>> - Wins: <<2>> - Ratio: <<3>>",
+            _FormatThousands(S2W.saved.spins), _FormatThousands(S2W.saved.wins), string.format("%.2f", accountRatio)))
+
+    -- Default ----------------------------------------------------------------
+    else
+        d(S2W.prefix .. "Command not recognized!")
+    end
+end
+
+-- -----------------------------------------------------------------------------
+-- Shared functions
+-- -----------------------------------------------------------------------------
 
 function S2W.UI.Draw()
     local container = WINDOW_MANAGER:GetControlByName("S2WContainer")
@@ -34,9 +110,9 @@ function S2W.UI.Draw()
             else
                 c:SetHidden(false)
             end
-            c:SetHandler("OnMoveStop", function(...) S2W.UI.Position.Save() end)
-            c:SetHandler("OnMouseEnter", function(...) toggleDraggable(true) end)
-            c:SetHandler("OnMouseExit", function(...) toggleDraggable(false) end)
+            c:SetHandler("OnMoveStop", function(...) _SavePosition() end)
+            c:SetHandler("OnMouseEnter", function(...) _ToggleDraggable(true) end)
+            c:SetHandler("OnMouseExit", function(...) _ToggleDraggable(false) end)
 
             local bg = WINDOW_MANAGER:CreateControl("S2WBackdrop", c, CT_BACKDROP)
             bg:SetEdgeColor(0.1, 0.1, 0.1, 0.25)
@@ -97,7 +173,7 @@ function S2W.UI.Draw()
             S2W.SpinsCount = sc
             S2W.WinsCount = wc
 
-            S2W.UI.Position.Set(S2W.saved.positionLeft, S2W.saved.positionTop)
+            _SetPosition(S2W.saved.positionLeft, S2W.saved.positionTop)
 
         -- Reuse context
         else
@@ -132,27 +208,27 @@ function S2W.UI.UpdateSpins(shouldIncrement)
     -- Not set and true increment, false does not
     if shouldIncrement == nil or shouldIncrement ~= false then
         -- Increment saved spins
-        S2W.UI.Spins = S2W.UI.Spins + 1
+        session.spins = session.spins + 1
         S2W.saved.spins = S2W.saved.spins + 1
         S2W.savedCharacter.spins = S2W.savedCharacter.spins + 1
     end
 
-    S2W:Trace(1, zo_strformat("Spins - Session: <<1>> Character: <<2>> Account: <<3>>", S2W.UI.Spins, S2W.savedCharacter.spins, S2W.saved.spins))
+    S2W:Trace(1, zo_strformat("Spins - Session: <<1>> Character: <<2>> Account: <<3>>", session.spins, S2W.savedCharacter.spins, S2W.saved.spins))
 
     -- Set based on mode
-    if S2W.saved.mode == S2W.UI.MODE_ACCOUNT then
+    if S2W.saved.mode == S2W_MODE_ACCOUNT then
         spins = S2W.saved.spins
-    elseif S2W.saved.mode == S2W.UI.MODE_CHARACTER then
+    elseif S2W.saved.mode == S2W_MODE_CHARACTER then
         spins = S2W.savedCharacter.spins
-    elseif S2W.saved.mode == S2W.UI.MODE_SESSION then
-        spins = S2W.UI.Spins
+    elseif S2W.saved.mode == S2W_MODE_SESSION then
+        spins = session.spins
     end
 
     -- Update Display
     if spins == 0 or spins == nil then
         S2W.SpinsCount:SetText('--')
     else
-        local spinOut = formatThousands(spins)
+        local spinOut = _FormatThousands(spins)
         S2W.SpinsCount:SetText(spinOut)
     end
 end
@@ -166,46 +242,29 @@ function S2W.UI.UpdateWins(shouldIncrement)
     -- Not set and true increment, false does not
     if shouldIncrement == nil or shouldIncrement ~= false then
         -- Increment saved wins
-        S2W.UI.Wins = S2W.UI.Wins + 1
+        session.wins = session.wins + 1
         S2W.saved.wins = S2W.saved.wins + 1
         S2W.savedCharacter.wins = S2W.savedCharacter.wins + 1
     end
 
-    S2W:Trace(1, zo_strformat("Wins - Session: <<1>> Character: <<2>> Account: <<3>>", S2W.UI.Wins, S2W.savedCharacter.wins, S2W.saved.wins))
+    S2W:Trace(1, zo_strformat("Wins - Session: <<1>> Character: <<2>> Account: <<3>>", session.wins, S2W.savedCharacter.wins, S2W.saved.wins))
 
     -- Set based on mode
-    if S2W.saved.mode == S2W.UI.MODE_ACCOUNT then
+    if S2W.saved.mode == S2W_MODE_ACCOUNT then
         wins = S2W.saved.wins
-    elseif S2W.saved.mode == S2W.UI.MODE_CHARACTER then
+    elseif S2W.saved.mode == S2W_MODE_CHARACTER then
         wins = S2W.savedCharacter.wins
-    elseif S2W.saved.mode == S2W.UI.MODE_SESSION then
-        wins = S2W.UI.Wins
+    elseif S2W.saved.mode == S2W_MODE_SESSION then
+        wins = session.wins
     end
 
     -- Update Display
     if wins == 0 or wins == nil then
         S2W.WinsCount:SetText('--')
     else
-        local winOut = formatThousands(wins)
+        local winOut = _FormatThousands(wins)
         S2W.WinsCount:SetText(winOut)
     end
-end
-
-function toggleDraggable(state)
-    if S2W.saved.unlocked then
-        if state then
-            WINDOW_MANAGER:SetMouseCursor(12)
-            S2W.Background:SetCenterColor(0.5, 0.5, 0.5, 0.25)
-        else
-            WINDOW_MANAGER:SetMouseCursor(0)
-            S2W.Background:SetCenterColor(0.1, 0.1, 0.1, 0.25)
-        end
-    end
-end
-
-function formatThousands(n)
-    if n == nil then return 0 end
-    return FormatIntegerWithDigitGrouping(n, ',', 3)
 end
 
 function S2W.UI.ToggleHUD()
@@ -244,23 +303,6 @@ function S2W.UI.Show(shouldShow)
     end
 end
 
-
-function S2W.UI.Position.Save()
-    local top   = S2W.Container:GetTop()
-    local left  = S2W.Container:GetLeft()
-
-    S2W:Trace(2, "Saving position - Left: " .. left .. " Top: " .. top)
-
-    S2W.saved.positionLeft = left
-    S2W.saved.positionTop  = top
-end
-
-function S2W.UI.Position.Set(left, top)
-    S2W:Trace(2, "Setting - Left: " .. left .. " Top: " .. top)
-    S2W.Container:ClearAnchors()
-    S2W.Container:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, left, top)
-end
-
 function S2W.UI.SlashCommand(command)
     -- Debug Options ----------------------------------------------------------
     if command == "debug 0" then
@@ -296,42 +338,7 @@ function S2W.UI.SlashCommand(command)
 
     -- Reporting---------------------------------------------------------------
     elseif command == "report" then
-        S2W.UI.Report(command)
-
-    -- Default ----------------------------------------------------------------
-    else
-        d(S2W.prefix .. "Command not recognized!")
-    end
-end
-
-function S2W.UI.Report(command)
-    if command == "" or command == "report" then
-
-        -- Handle nan or negative, change to zero
-        local sessionRatio = S2W.UI.Wins / S2W.UI.Spins
-        if sessionRatio ~= sessionRatio or sessionRatio < 0 then
-            sessionRatio = 0
-        end
-
-        local lifetimeRatio = S2W.savedCharacter.wins / S2W.savedCharacter.spins
-        if lifetimeRatio ~= lifetimeRatio or lifetimeRatio < 0 then
-            lifetimeRatio = 0
-        end
-
-        StartChatInput(zo_strformat("*** Spin2Win Report *** Spins: <<1>> - Wins: <<2>> - Ratio: <<3>> - Lifetime Spins: <<4>> - Lifetime Wins: <<5>> - Lifetime Ratio: <<6>>",
-            formatThousands(S2W.UI.Spins), formatThousands(S2W.UI.Wins), string.format("%.2f", sessionRatio),
-            formatThousands(S2W.savedCharacter.spins), formatThousands(S2W.savedCharacter.wins), string.format("%.2f", lifetimeRatio)))
-
-    elseif command == "account" or command == "report account" then
-
-        -- Handle nan or negative, change to zero
-        local accountRatio = S2W.saved.wins / S2W.saved.spins
-        if accountRatio ~= accountRatio or accountRatio < 0 then
-            accountRatio = 0
-        end
-
-        StartChatInput(zo_strformat("*** Spin2Win Report - Account-wide *** Spins: <<1>> - Wins: <<2>> - Ratio: <<3>>",
-            formatThousands(S2W.saved.spins), formatThousands(S2W.saved.wins), string.format("%.2f", accountRatio)))
+        _Report(command)
 
     -- Default ----------------------------------------------------------------
     else

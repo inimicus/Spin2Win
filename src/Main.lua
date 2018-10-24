@@ -17,6 +17,11 @@ S2W.HUDHidden   = false
 S2W.ForceShow   = false
 S2W.isDead      = false
 
+-- Mode Globals
+S2W_MODE_SESSION = 1
+S2W_MODE_CHARACTER = 2
+S2W_MODE_ACCOUNT = 3
+
 -- -----------------------------------------------------------------------------
 -- Level of debug output
 -- 1: Low    - Basic debug info, show core functionality
@@ -35,14 +40,14 @@ end
 -- Startup
 -- -----------------------------------------------------------------------------
 
-function S2W.Initialize(event, addonName)
+local function Initialize(event, addonName)
     if addonName ~= S2W.name then return end
 
     S2W:Trace(1, "Spin2Win Loaded")
     EVENT_MANAGER:UnregisterForEvent(S2W.name, EVENT_ADD_ON_LOADED)
 
-    S2W.saved = ZO_SavedVars:NewAccountWide("Spin2WinVariables", S2W.dbVersion, nil, S2W:GetDefaults())
-    S2W.savedCharacter = ZO_SavedVars:New("Spin2WinVariables", S2W.dbVersion, nil, S2W:GetCharacterDefaults())
+    S2W.saved = ZO_SavedVars:NewAccountWide("Spin2WinVariables", S2W.dbVersion, nil, S2W.Defaults:Get())
+    S2W.savedCharacter = ZO_SavedVars:New("Spin2WinVariables", S2W.dbVersion, nil, S2W.Defaults:GetCharacter())
 
     -- Use saved debugMode value if the above value has not been changed
     if S2W.debugMode == 0 then
@@ -57,7 +62,7 @@ function S2W.Initialize(event, addonName)
     S2W.isDead = IsUnitDead("player")
 
     S2W.Tracking.RegisterEvents()
-    S2W:InitSettings()
+    S2W.Settings:Init()
     S2W.Tracking.CheckSpinSlotted()
     S2W.UI.ToggleHUD()
 
@@ -68,5 +73,5 @@ end
 -- Event Hooks
 -- -----------------------------------------------------------------------------
 
-EVENT_MANAGER:RegisterForEvent(S2W.name, EVENT_ADD_ON_LOADED, function(...) S2W.Initialize(...) end)
+EVENT_MANAGER:RegisterForEvent(S2W.name, EVENT_ADD_ON_LOADED, Initialize)
 

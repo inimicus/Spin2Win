@@ -6,7 +6,9 @@
 -- Defaults.lua
 -- -----------------------------------------------------------------------------
 
-local defaults = {
+S2W.Defaults = {}
+
+local settings = {
     debugMode    = 0,
     positionLeft = 100,
     positionTop  = 100,
@@ -16,15 +18,15 @@ local defaults = {
     wins         = 0,
 }
 
-local characterDefaults = {
+local characterSettings = {
     spins = 0,
     wins  = 0,
 }
 
-function S2W:GetDefaults()
-    return defaults
+function S2W.Defaults:Get()
+    return settings
 end
 
-function S2W:GetCharacterDefaults()
-    return characterDefaults
+function S2W.Defaults:GetCharacter()
+    return charactersettings
 end
