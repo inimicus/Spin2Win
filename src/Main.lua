@@ -32,7 +32,8 @@ S2W.debugMode = 0
 
 function S2W:Trace(debugLevel, ...)
     if debugLevel <= S2W.debugMode then
-        d(S2W.prefix .. ...)
+        local message = zo_strformat(...)
+        d(S2W.prefix .. message)
     end
 end
 

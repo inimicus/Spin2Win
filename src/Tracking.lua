@@ -99,7 +99,7 @@ local function _DidSpin(_, changeType, _, effectName, unitTag, _, _,
     if changeType ~= EFFECT_RESULT_GAINED then return end
 
     -- Update Spins
-    S2W:Trace(2, zo_strformat("<<1>> (<<2>>)", effectName, effectAbilityId))
+    S2W:Trace(2, "<<1>> (<<2>>)", effectName, effectAbilityId)
     S2W.UI.UpdateSpins()
 end
 
@@ -126,10 +126,10 @@ local function _AvAWin(eventID, result, isError, abilityName, _, _, sourceName, 
 
     -- Only count player wins
     if sourceType == COMBAT_UNIT_TYPE_PLAYER and sourceName ~= targetName then
-        S2W:Trace(2, zo_strformat("AVA Win: <<1>> killed <<2>> with <<3>> (<<4>>)", sourceName, targetName, abilityName, abilityId))
+        S2W:Trace(2, "AVA Win: <<1>> killed <<2>> with <<3>> (<<4>>)", sourceName, targetName, abilityName, abilityId)
         _DidWin()
     else
-        S2W:Trace(2, zo_strformat("No AVA Win: Non-player source or self-inflicted - <<1>> killed <<2>> with <<3>> (<<4>>)", sourceName, targetName, abilityName, abilityId))
+        S2W:Trace(2, "No AVA Win: Non-player source or self-inflicted - <<1>> killed <<2>> with <<3>> (<<4>>)", sourceName, targetName, abilityName, abilityId)
     end
 
 end
@@ -153,10 +153,10 @@ local function _BGWin(_, killedPlayerCharacterName, _, _, _, _, _, battlegroundK
     if killingAbilityId == IDs.STEEL_TORNADO.ABILITY or
             killingAbilityId == IDs.WHIRLWIND.ABILITY or
             killingAbilityId == IDs.WHIRLING_BLADES.ABILITY then
-        S2W:Trace(2, zo_strformat("BG Win: On <<1>> with <<2>> (<<3>>)", killedPlayerCharacterName, GetAbilityName(killingAbilityId), killingAbilityId))
+        S2W:Trace(2, "BG Win: On <<1>> with <<2>> (<<3>>)", killedPlayerCharacterName, GetAbilityName(killingAbilityId), killingAbilityId)
         _DidWin()
     else
-        S2W:Trace(2, zo_strformat("BG No-Spin KB: <<1>> (<<2>>)", GetAbilityName(killingAbilityId), killingAbilityId))
+        S2W:Trace(2, "BG No-Spin KB: <<1>> (<<2>>)", GetAbilityName(killingAbilityId), killingAbilityId)
         return
     end
 

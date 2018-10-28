@@ -213,7 +213,7 @@ function S2W.UI.UpdateSpins(shouldIncrement)
         S2W.savedCharacter.spins = S2W.savedCharacter.spins + 1
     end
 
-    S2W:Trace(1, zo_strformat("Spins - Session: <<1>> Character: <<2>> Account: <<3>>", session.spins, S2W.savedCharacter.spins, S2W.saved.spins))
+    S2W:Trace(1, "Spins - Session: <<1>> Character: <<2>> Account: <<3>>", session.spins, S2W.savedCharacter.spins, S2W.saved.spins)
 
     -- Set based on mode
     if S2W.saved.mode == S2W_MODE_ACCOUNT then
@@ -247,7 +247,7 @@ function S2W.UI.UpdateWins(shouldIncrement)
         S2W.savedCharacter.wins = S2W.savedCharacter.wins + 1
     end
 
-    S2W:Trace(1, zo_strformat("Wins - Session: <<1>> Character: <<2>> Account: <<3>>", session.wins, S2W.savedCharacter.wins, S2W.saved.wins))
+    S2W:Trace(1, "Wins - Session: <<1>> Character: <<2>> Account: <<3>>", session.wins, S2W.savedCharacter.wins, S2W.saved.wins)
 
     -- Set based on mode
     if S2W.saved.mode == S2W_MODE_ACCOUNT then
