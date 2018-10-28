@@ -11,7 +11,7 @@ S2W.name        = "Spin2Win"
 S2W.version     = "1.2.0"
 S2W.dbVersion   = 1
 S2W.slash       = "/s2w"
-S2W.prefix      = "[S2W] "
+S2W.prefix      = "[Spin2Win] "
 S2W.enabled     = false
 S2W.HUDHidden   = false
 S2W.ForceShow   = false
@@ -41,7 +41,7 @@ end
 -- Startup
 -- -----------------------------------------------------------------------------
 
-local function Initialize(event, addonName)
+local function S2W_Initialize(event, addonName)
     if addonName ~= S2W.name then return end
 
     S2W:Trace(1, "Spin2Win Loaded")
@@ -74,5 +74,5 @@ end
 -- Event Hooks
 -- -----------------------------------------------------------------------------
 
-EVENT_MANAGER:RegisterForEvent(S2W.name, EVENT_ADD_ON_LOADED, Initialize)
+EVENT_MANAGER:RegisterForEvent(S2W.name, EVENT_ADD_ON_LOADED, S2W_Initialize)
 
