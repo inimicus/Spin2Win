@@ -12,6 +12,9 @@ S2W.Tracking = {}
 local S2W_SKILL_LINE_DUAL_WIELD = 3
 local S2W_SKILL_WHIRLWIND = 4
 
+-- Keep track of ability we're monitoring in the event of a respec/morph
+local trackedAbility
+
 -- IDs of spin abilities
 -- Due to effect IDs differing from ability IDs, such as
 -- when tracking uses of spin, we need to map the ability
@@ -236,8 +239,9 @@ function S2W.Tracking.CheckSpinSlotted()
 
     -- If spin is slotted
     if slottedPosition ~= nil then
-        if not S2W.enabled then
+        if not S2W.enabled or abilityId ~= trackedAbility then
             S2W:Trace(1, "Enabling S2W")
+            trackedAbility = abilityId
             S2W.enabled = true
             _RegisterEventsForId(abilityId)
             S2W.UI.Draw()
