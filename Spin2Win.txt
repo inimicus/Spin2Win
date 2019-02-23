@@ -2,7 +2,7 @@
 ## APIVersion: 100025
 ## SavedVariables: Spin2WinVariables
 ## Description: See how much spinning and winning you did!
-## Version: 1.2.0
+## Version: 1.2.1
 ## Author: |cFFCCCC@g4rr3t|r
 ## OptionalDependsOn:  LibAddonMenu-2.0
 
