@@ -28,5 +28,5 @@ function S2W.Defaults:Get()
 end
 
 function S2W.Defaults:GetCharacter()
-    return charactersettings
+    return characterSettings
 end
