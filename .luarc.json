@@ -1,0 +1,14 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sumneko/vscode-lua/master/setting/schema.json",
+  "Lua.runtime.version": "Lua 5.1",
+  "Lua.workspace.library": ["../eso-api-lua-intellij-baertram_API101038"],
+  "diagnostics.globals": [
+    "ACTION_RESULT_EFFECT_GAINED",
+    "GuiRoot",
+    "LibAddonMenu2",
+    "HUD_SCENE",
+    "HUD_UI_SCENE",
+    "WINDOW_MANAGER",
+  ]
+}
+
