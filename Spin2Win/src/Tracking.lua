@@ -99,7 +99,7 @@ local function _DidSpin(_, changeType, _, effectName, unitTag, _, _,
         stackCount, _, _, _, _, _, _, _, effectAbilityId)
 
     -- Ignore non-gained effects
-    if changeType ~= EFFECT_RESULT_GAINED then return end
+    if changeType ~= ACTION_RESULT_EFFECT_GAINED then return end
 
     -- Update Spins
     S2W:Trace(2, "<<1>> (<<2>>)", effectName, effectAbilityId)
@@ -172,11 +172,11 @@ local function _RegisterEventsForId(abilityId)
 
     local effectId = IDs[abilityId]
 
-    S2W:Trace(2, "Registering: " .. abilityId)
+    S2W:Trace(2, "Registering - Ability: <<1>> Effect: <<2>>", abilityId, effectId)
 
     -- Spins
-    EVENT_MANAGER:RegisterForEvent(S2W.name .. '_' .. effectId, EVENT_EFFECT_CHANGED, _DidSpin)
-    EVENT_MANAGER:AddFilterForEvent(S2W.name .. '_' .. effectId, EVENT_EFFECT_CHANGED,
+    EVENT_MANAGER:RegisterForEvent(S2W.name .. '_' .. effectId, EVENT_COMBAT_EVENT, _DidSpin)
+    EVENT_MANAGER:AddFilterForEvent(S2W.name .. '_' .. effectId, EVENT_COMBAT_EVENT,
         REGISTER_FILTER_ABILITY_ID,                 effectId,
         REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE,    COMBAT_UNIT_TYPE_PLAYER)
 
@@ -235,12 +235,14 @@ function S2W.Tracking.CheckSpinSlotted()
     if not skillPurchased and not S2W.enabled then return end
 
     local abilityId = GetSkillAbilityId(SKILL_TYPE_WEAPON, S2W_SKILL_LINE_DUAL_WIELD, S2W_SKILL_WHIRLWIND)
+    local name = GetSkillAbilityInfo(SKILL_TYPE_WEAPON, S2W_SKILL_LINE_DUAL_WIELD, S2W_SKILL_WHIRLWIND)
+    S2W:Trace(1, "Ability: <<1>> (<<2>>)", name, abilityId)
     local slottedPosition = _GetSlottedPosition(abilityId)
 
     -- If spin is slotted
     if slottedPosition ~= nil then
         if not S2W.enabled or abilityId ~= trackedAbility then
-            S2W:Trace(1, "Enabling S2W")
+            S2W:Trace(1, "Enabling S2W, slot <<1>>", slottedPosition)
             trackedAbility = abilityId
             S2W.enabled = true
             _RegisterEventsForId(abilityId)
