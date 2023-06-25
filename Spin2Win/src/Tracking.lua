@@ -61,9 +61,13 @@ end
 -- @return *integer|nil* slottedPosition - Slot index of first found skill
 local function _GetSlottedPosition(abilityId)
     for x = 3, 7 do
+        --- Disable mismatch of integer -> luaindex
+        --- @diagnostic disable-next-line: param-type-mismatch
         local slotPrimary = GetSlotBoundId(x, HOTBAR_CATEGORY_PRIMARY)
         if slotPrimary == abilityId then return slotPrimary end
 
+        --- Disable mismatch of integer -> luaindex
+        --- @diagnostic disable-next-line: param-type-mismatch
         local slotBackup = GetSlotBoundId(x, HOTBAR_CATEGORY_BACKUP)
         if slotBackup == abilityId then return slotBackup end
     end
@@ -227,6 +231,8 @@ end
 -- @param none
 -- @return none
 function S2W.Tracking.CheckSpinSlotted()
+    --- Disable mismatch of integer -> luaindex
+    --- @diagnostic disable-next-line: param-type-mismatch
     local skillPurchased = IsSkillAbilityPurchased(SKILL_TYPE_WEAPON, S2W_SKILL_LINE_DUAL_WIELD, S2W_SKILL_WHIRLWIND)
 
     -- Check if skill is purchased
@@ -234,7 +240,11 @@ function S2W.Tracking.CheckSpinSlotted()
     -- If not purchased but enabled, then suspect respec and fall through
     if not skillPurchased and not S2W.enabled then return end
 
-    local abilityId = GetSkillAbilityId(SKILL_TYPE_WEAPON, S2W_SKILL_LINE_DUAL_WIELD, S2W_SKILL_WHIRLWIND)
+    --- Disable mismatch of integer -> luaindex
+    --- @diagnostic disable-next-line: param-type-mismatch
+    local abilityId = GetSkillAbilityId(SKILL_TYPE_WEAPON, S2W_SKILL_LINE_DUAL_WIELD, S2W_SKILL_WHIRLWIND, false) --[[@as integer]]
+    --- Disable mismatch of integer -> luaindex
+    --- @diagnostic disable-next-line: param-type-mismatch
     local name = GetSkillAbilityInfo(SKILL_TYPE_WEAPON, S2W_SKILL_LINE_DUAL_WIELD, S2W_SKILL_WHIRLWIND)
     S2W:Trace(1, "Ability: <<1>> (<<2>>)", name, abilityId)
     local slottedPosition = _GetSlottedPosition(abilityId)

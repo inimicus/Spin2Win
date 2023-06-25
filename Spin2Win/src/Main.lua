@@ -44,7 +44,7 @@ end
 -- Startup
 -- -----------------------------------------------------------------------------
 
-local function S2W_Initialize(event, addonName)
+local function S2W_Initialize(_, addonName)
     if addonName ~= S2W.name then return end
 
     S2W:Trace(1, "Spin2Win Loaded")

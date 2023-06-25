@@ -110,9 +110,9 @@ function S2W.UI.Draw()
             else
                 c:SetHidden(false)
             end
-            c:SetHandler("OnMoveStop", function(...) _SavePosition() end)
-            c:SetHandler("OnMouseEnter", function(...) _ToggleDraggable(true) end)
-            c:SetHandler("OnMouseExit", function(...) _ToggleDraggable(false) end)
+            c:SetHandler("OnMoveStop", _SavePosition)
+            c:SetHandler("OnMouseEnter", function() _ToggleDraggable(true) end)
+            c:SetHandler("OnMouseExit", function() _ToggleDraggable(false) end)
 
             local bg = WM:CreateControl("S2WBackdrop", c, CT_BACKDROP)
             bg:SetEdgeColor(0.1, 0.1, 0.1, 0.25)
@@ -216,6 +216,7 @@ function S2W.UI.UpdateSpins(shouldIncrement)
         S2W.saved.spins)
 
     -- Set based on mode
+    local spins
     if S2W.saved.mode == S2W_MODE_ACCOUNT then
         spins = S2W.saved.spins
     elseif S2W.saved.mode == S2W_MODE_CHARACTER then
@@ -250,6 +251,7 @@ function S2W.UI.UpdateWins(shouldIncrement)
         S2W.saved.wins)
 
     -- Set based on mode
+    local wins
     if S2W.saved.mode == S2W_MODE_ACCOUNT then
         wins = S2W.saved.wins
     elseif S2W.saved.mode == S2W_MODE_CHARACTER then
@@ -269,7 +271,7 @@ end
 
 function S2W.UI.ToggleHUD()
     local hudScene = SM:GetScene("hud")
-    hudScene:RegisterCallback("StateChange", function(oldState, newState)
+    hudScene:RegisterCallback("StateChange", function(_, newState)
         -- Transitioning to a menu/non-HUD
         if newState == SCENE_HIDDEN and SM:GetNextScene():GetName() ~= "hudui" then
             S2W.HUDHidden = true

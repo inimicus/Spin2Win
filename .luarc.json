@@ -5,10 +5,11 @@
   "diagnostics.globals": [
     "ACTION_RESULT_EFFECT_GAINED",
     "GuiRoot",
-    "LibAddonMenu2",
     "HUD_SCENE",
     "HUD_UI_SCENE",
-    "WINDOW_MANAGER",
+    "LibAddonMenu2",
+    "SLASH_COMMANDS",
+    "WINDOW_MANAGER"
   ]
 }
 

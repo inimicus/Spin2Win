@@ -43,7 +43,7 @@ local function _SetMode(mode)
     S2W.UI.Update(false)
 end
 
-local function _GetMode(mode)
+local function _GetMode()
     return S2W.saved.mode
 end
 
