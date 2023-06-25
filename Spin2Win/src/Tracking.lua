@@ -203,7 +203,7 @@ end
 -- @param *integer* abilityId - Skill ability ID to unregister
 -- @return none
 local function _UnregisterEventsForId(abilityId)
-    S2W:Trace(2, "Unregistering: " .. abilityId)
+    S2W:Trace(2, "Unregistering: <<1>>", abilityId)
 
     local effectId = IDs[abilityId]
 

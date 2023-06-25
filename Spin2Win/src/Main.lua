@@ -56,7 +56,7 @@ local function S2W_Initialize(event, addonName)
     -- Use saved debugMode value if the above value has not been changed
     if S2W.debugMode == 0 then
         S2W.debugMode = S2W.saved.debugMode
-        S2W:Trace(1, "Setting debug value to saved: " .. S2W.saved.debugMode)
+        S2W:Trace(1, "Setting debug value to saved: <<1>>", S2W.saved.debugMode)
     end
 
     SC[S2W.slash] = S2W.UI.SlashCommand

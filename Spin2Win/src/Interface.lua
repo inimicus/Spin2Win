@@ -42,14 +42,14 @@ local function _SavePosition()
     local top  = S2W.Container:GetTop()
     local left = S2W.Container:GetLeft()
 
-    S2W:Trace(2, "Saving position - Left: " .. left .. " Top: " .. top)
+    S2W:Trace(2, "Saving position - Left: <<1>> Top: <<2>>", left, top)
 
     S2W.saved.positionLeft = left
     S2W.saved.positionTop  = top
 end
 
 local function _SetPosition(left, top)
-    S2W:Trace(2, "Setting - Left: " .. left .. " Top: " .. top)
+    S2W:Trace(2, "Setting - Left: <<1>> Top: <<2>>", left, top)
     S2W.Container:ClearAnchors()
     S2W.Container:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, left, top)
 end
