@@ -6,9 +6,9 @@
 -- Defaults.lua
 -- -----------------------------------------------------------------------------
 
-S2W.Defaults = {}
+S2W.Defaults            = {}
 
-local settings = {
+local settings          = {
     debugMode    = 0,
     positionLeft = 100,
     positionTop  = 100,

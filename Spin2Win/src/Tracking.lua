@@ -6,11 +6,11 @@
 -- Tracking.lua
 -- -----------------------------------------------------------------------------
 
-S2W.Tracking = {}
+S2W.Tracking                    = {}
 
 -- Convenience constants identifying skill lines, skills in skill tree
 local S2W_SKILL_LINE_DUAL_WIELD = 3
-local S2W_SKILL_WHIRLWIND = 4
+local S2W_SKILL_WHIRLWIND       = 4
 
 -- Keep track of ability we're monitoring in the event of a respec/morph
 local trackedAbility
@@ -19,10 +19,10 @@ local trackedAbility
 -- Due to effect IDs differing from ability IDs, such as
 -- when tracking uses of spin, we need to map the ability
 -- ID to the effect ID here.
-local IDs = {           -- Ability ID = Effect ID
-    [38861] = 39665,    -- Steel Tornado
-    [28591] = 39620,    -- Whirlwind
-    [38891] = 39666,    -- Whirling Blades
+local IDs                       = { -- Ability ID = Effect ID
+    [38861] = 39665,                -- Steel Tornado
+    [28591] = 39620,                -- Whirlwind
+    [38891] = 39666,                -- Whirling Blades
 }
 
 -- -----------------------------------------------------------------------------
@@ -96,8 +96,7 @@ end
 -- @param *CombatUnitType* sourceType
 -- @return none
 local function _DidSpin(_, changeType, _, effectName, unitTag, _, _,
-        stackCount, _, _, _, _, _, _, _, effectAbilityId)
-
+                        stackCount, _, _, _, _, _, _, _, effectAbilityId)
     -- Ignore non-gained effects
     if changeType ~= ACTION_RESULT_EFFECT_GAINED then return end
 
@@ -125,16 +124,16 @@ end
 -- @param *integer* targetUnitId
 -- @param *integer* abilityId
 -- @return none
-local function _AvAWin(eventID, result, isError, abilityName, _, _, sourceName, sourceType, targetName, targetType, _, _, _, _, _, _, abilityId)
-
+local function _AvAWin(eventID, result, isError, abilityName, _, _, sourceName, sourceType, targetName, targetType, _, _,
+                       _, _, _, _, abilityId)
     -- Only count player wins
     if sourceType == COMBAT_UNIT_TYPE_PLAYER and sourceName ~= targetName then
         S2W:Trace(2, "AVA Win: <<1>> killed <<2>> with <<3>> (<<4>>)", sourceName, targetName, abilityName, abilityId)
         _DidWin()
     else
-        S2W:Trace(2, "No AVA Win: Non-player source or self-inflicted - <<1>> killed <<2>> with <<3>> (<<4>>)", sourceName, targetName, abilityName, abilityId)
+        S2W:Trace(2, "No AVA Win: Non-player source or self-inflicted - <<1>> killed <<2>> with <<3>> (<<4>>)",
+            sourceName, targetName, abilityName, abilityId)
     end
-
 end
 
 -- Track Battlegrounds wins
@@ -148,28 +147,26 @@ end
 -- @param *integer* killingAbilityId
 -- @return none
 local function _BGWin(_, killedPlayerCharacterName, _, _, _, _, _, battlegroundKillType, killingAbilityId)
-
     -- Ignore all but killing blows
     if battlegroundKillType ~= BATTLEGROUND_KILL_TYPE_KILLING_BLOW then return end
 
     -- Only count Spin-based wins
     if killingAbilityId == IDs.STEEL_TORNADO.ABILITY or
-            killingAbilityId == IDs.WHIRLWIND.ABILITY or
-            killingAbilityId == IDs.WHIRLING_BLADES.ABILITY then
-        S2W:Trace(2, "BG Win: On <<1>> with <<2>> (<<3>>)", killedPlayerCharacterName, GetAbilityName(killingAbilityId), killingAbilityId)
+        killingAbilityId == IDs.WHIRLWIND.ABILITY or
+        killingAbilityId == IDs.WHIRLING_BLADES.ABILITY then
+        S2W:Trace(2, "BG Win: On <<1>> with <<2>> (<<3>>)", killedPlayerCharacterName, GetAbilityName(killingAbilityId),
+            killingAbilityId)
         _DidWin()
     else
         S2W:Trace(2, "BG No-Spin KB: <<1>> (<<2>>)", GetAbilityName(killingAbilityId), killingAbilityId)
         return
     end
-
 end
 
 -- Register events, call when tracking should be enabled
 -- @param *integer* abilityId - Skill ability ID to register
 -- @return none
 local function _RegisterEventsForId(abilityId)
-
     local effectId = IDs[abilityId]
 
     S2W:Trace(2, "Registering - Ability: <<1>> Effect: <<2>>", abilityId, effectId)
@@ -177,16 +174,17 @@ local function _RegisterEventsForId(abilityId)
     -- Spins
     EVENT_MANAGER:RegisterForEvent(S2W.name .. '_' .. effectId, EVENT_COMBAT_EVENT, _DidSpin)
     EVENT_MANAGER:AddFilterForEvent(S2W.name .. '_' .. effectId, EVENT_COMBAT_EVENT,
-        REGISTER_FILTER_ABILITY_ID,                 effectId,
-        REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE,    COMBAT_UNIT_TYPE_PLAYER)
+        REGISTER_FILTER_ABILITY_ID, effectId,
+        REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER)
 
     -- AVA Wins
     EVENT_MANAGER:RegisterForEvent(S2W.name .. '_' .. abilityId, EVENT_COMBAT_EVENT, _AvAWin)
     EVENT_MANAGER:AddFilterForEvent(S2W.name .. '_' .. abilityId, EVENT_COMBAT_EVENT,
-        REGISTER_FILTER_ABILITY_ID,     abilityId,
-        REGISTER_FILTER_UNIT_TAG,       COMBAT_UNIT_TYPE_PLAYER,
-        REGISTER_FILTER_IS_ERROR,       false,
-        REGISTER_FILTER_COMBAT_RESULT,  ACTION_RESULT_KILLING_BLOW)
+        REGISTER_FILTER_ABILITY_ID, abilityId,
+        REGISTER_FILTER_UNIT_TAG, COMBAT_UNIT_TYPE_PLAYER,
+        REGISTER_FILTER_IS_ERROR, false,
+        REGISTER_FILTER_COMBAT_RESULT, ACTION_RESULT_KILLING_BLOW
+    )
 
     -- Battlegrounds KBs
     EVENT_MANAGER:RegisterForEvent(S2W.name, EVENT_BATTLEGROUND_KILL, _BGWin)
@@ -196,7 +194,6 @@ local function _RegisterEventsForId(abilityId)
     -- Hide/Show on Death/Alive
     EVENT_MANAGER:RegisterForEvent(S2W.name, EVENT_PLAYER_ALIVE, _OnAlive)
     EVENT_MANAGER:RegisterForEvent(S2W.name, EVENT_PLAYER_DEAD, _OnDeath)
-
 end
 
 -- Unregister events, call when tracking should be disabled
@@ -257,7 +254,7 @@ function S2W.Tracking.CheckSpinSlotted()
             S2W:Trace(1, "Already enabled")
         end
 
-    -- Spin not slotted
+        -- Spin not slotted
     else
         if S2W.enabled then
             S2W:Trace(1, "Disabling S2W")
@@ -285,4 +282,3 @@ function S2W.Tracking.UnregisterEvents()
     S2W:Trace(2, "Unregistering events")
     EVENT_MANAGER:UnregisterForEvent(S2W.name, EVENT_ACTION_SLOTS_ALL_HOTBARS_UPDATED)
 end
-

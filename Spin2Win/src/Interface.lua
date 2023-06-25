@@ -6,12 +6,12 @@
 -- Interface.lua
 -- -----------------------------------------------------------------------------
 
-S2W.UI = {}
+S2W.UI        = {}
 
 -- Session Storage
 local session = {
     spins = 0,
-    wins = 0,
+    wins  = 0,
 }
 
 -- -----------------------------------------------------------------------------
@@ -36,8 +36,8 @@ local function _ToggleDraggable(state)
 end
 
 local function _SavePosition()
-    local top   = S2W.Container:GetTop()
-    local left  = S2W.Container:GetLeft()
+    local top  = S2W.Container:GetTop()
+    local left = S2W.Container:GetLeft()
 
     S2W:Trace(2, "Saving position - Left: " .. left .. " Top: " .. top)
 
@@ -53,7 +53,6 @@ end
 
 local function _Report(command)
     if command == "" or command == "report" then
-
         -- Handle nan or negative, change to zero
         local sessionRatio = session.wins / session.spins
         if sessionRatio ~= sessionRatio or sessionRatio < 0 then
@@ -65,12 +64,12 @@ local function _Report(command)
             lifetimeRatio = 0
         end
 
-        StartChatInput(zo_strformat("*** Spin2Win Report *** Spins: <<1>> - Wins: <<2>> - Ratio: <<3>> - Lifetime Spins: <<4>> - Lifetime Wins: <<5>> - Lifetime Ratio: <<6>>",
+        StartChatInput(zo_strformat(
+            "*** Spin2Win Report *** Spins: <<1>> - Wins: <<2>> - Ratio: <<3>> - Lifetime Spins: <<4>> - Lifetime Wins: <<5>> - Lifetime Ratio: <<6>>",
             _FormatThousands(session.spins), _FormatThousands(session.wins), string.format("%.2f", sessionRatio),
-            _FormatThousands(S2W.savedCharacter.spins), _FormatThousands(S2W.savedCharacter.wins), string.format("%.2f", lifetimeRatio)))
-
+            _FormatThousands(S2W.savedCharacter.spins), _FormatThousands(S2W.savedCharacter.wins),
+            string.format("%.2f", lifetimeRatio)))
     elseif command == "account" or command == "report account" then
-
         -- Handle nan or negative, change to zero
         local accountRatio = S2W.saved.wins / S2W.saved.spins
         if accountRatio ~= accountRatio or accountRatio < 0 then
@@ -80,7 +79,7 @@ local function _Report(command)
         StartChatInput(zo_strformat("*** Spin2Win Report - Account-wide *** Spins: <<1>> - Wins: <<2>> - Ratio: <<3>>",
             _FormatThousands(S2W.saved.spins), _FormatThousands(S2W.saved.wins), string.format("%.2f", accountRatio)))
 
-    -- Default ----------------------------------------------------------------
+        -- Default ----------------------------------------------------------------
     else
         d(S2W.prefix .. "Command not recognized!")
     end
@@ -94,10 +93,8 @@ function S2W.UI.Draw()
     local container = WINDOW_MANAGER:GetControlByName("S2WContainer")
 
     if S2W.enabled then
-
         -- Draw UI and create context if it doesn't exist
         if container == nil then
-
             local c = WINDOW_MANAGER:CreateTopLevelWindow("S2WContainer")
             c:SetClampedToScreen(true)
             c:SetDimensions(200, 50)
@@ -175,7 +172,7 @@ function S2W.UI.Draw()
 
             _SetPosition(S2W.saved.positionLeft, S2W.saved.positionTop)
 
-        -- Reuse context
+            -- Reuse context
         else
             if S2W.HUDHidden then
                 container:SetHidden(true)
@@ -184,7 +181,7 @@ function S2W.UI.Draw()
             end
         end
 
-    -- Disable display
+        -- Disable display
     else
         if container ~= nil then
             container:SetHidden(true)
@@ -200,7 +197,6 @@ function S2W.UI.Update(shouldIncrement)
 end
 
 function S2W.UI.UpdateSpins(shouldIncrement)
-
     -- Do nothing if disabled
     if not S2W.enabled then return end
 
@@ -213,7 +209,8 @@ function S2W.UI.UpdateSpins(shouldIncrement)
         S2W.savedCharacter.spins = S2W.savedCharacter.spins + 1
     end
 
-    S2W:Trace(1, "Spins - Session: <<1>> Character: <<2>> Account: <<3>>", session.spins, S2W.savedCharacter.spins, S2W.saved.spins)
+    S2W:Trace(1, "Spins - Session: <<1>> Character: <<2>> Account: <<3>>", session.spins, S2W.savedCharacter.spins,
+        S2W.saved.spins)
 
     -- Set based on mode
     if S2W.saved.mode == S2W_MODE_ACCOUNT then
@@ -234,7 +231,6 @@ function S2W.UI.UpdateSpins(shouldIncrement)
 end
 
 function S2W.UI.UpdateWins(shouldIncrement)
-
     -- Do nothing if disabled
     if not S2W.enabled then return end
 
@@ -247,7 +243,8 @@ function S2W.UI.UpdateWins(shouldIncrement)
         S2W.savedCharacter.wins = S2W.savedCharacter.wins + 1
     end
 
-    S2W:Trace(1, "Wins - Session: <<1>> Character: <<2>> Account: <<3>>", session.wins, S2W.savedCharacter.wins, S2W.saved.wins)
+    S2W:Trace(1, "Wins - Session: <<1>> Character: <<2>> Account: <<3>>", session.wins, S2W.savedCharacter.wins,
+        S2W.saved.wins)
 
     -- Set based on mode
     if S2W.saved.mode == S2W_MODE_ACCOUNT then
@@ -270,7 +267,6 @@ end
 function S2W.UI.ToggleHUD()
     local hudScene = SCENE_MANAGER:GetScene("hud")
     hudScene:RegisterCallback("StateChange", function(oldState, newState)
-
         -- Transitioning to a menu/non-HUD
         if newState == SCENE_HIDDEN and SCENE_MANAGER:GetNextScene():GetName() ~= "hudui" then
             S2W.HUDHidden = true
@@ -290,7 +286,6 @@ function S2W.UI.ToggleHUD()
 end
 
 function S2W.UI.Show(shouldShow)
-
     local context = WINDOW_MANAGER:GetControlByName("S2WContainer")
     if context ~= nil then
         if S2W.ForceShow then
@@ -322,7 +317,7 @@ function S2W.UI.SlashCommand(command)
         S2W.debugMode = 3
         S2W.saved.debugMode = 3
 
-    -- Modes ------------------------------------------------------------------
+        -- Modes ------------------------------------------------------------------
     elseif command == "mode session" then
         d(S2W.prefix .. "Setting display mode to Session")
         S2W.saved.mode = 1
@@ -336,13 +331,12 @@ function S2W.UI.SlashCommand(command)
         S2W.saved.mode = 3
         S2W.UI.Update(false)
 
-    -- Reporting---------------------------------------------------------------
+        -- Reporting---------------------------------------------------------------
     elseif command == "report" then
         _Report(command)
 
-    -- Default ----------------------------------------------------------------
+        -- Default ----------------------------------------------------------------
     else
         d(S2W.prefix .. "Command not recognized!")
     end
 end
-

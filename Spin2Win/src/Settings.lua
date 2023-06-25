@@ -51,15 +51,15 @@ end
 -- Settings Menu
 -- -----------------------------------------------------------------------------
 
-local LAM = LibAddonMenu2
+local LAM          = LibAddonMenu2
 
-local panelData = {
-    type        = "panel",
-    name        = "Spin2Win",
-    displayName = "Spin2Win",
-    author      = "g4rr3t",
-    version     = S2W.version,
-    registerForRefresh  = true,
+local panelData    = {
+    type               = "panel",
+    name               = "Spin2Win",
+    displayName        = "Spin2Win",
+    author             = "g4rr3t",
+    version            = S2W.version,
+    registerForRefresh = true,
 }
 
 local optionsTable = {
@@ -73,7 +73,8 @@ local optionsTable = {
         name = "Reset Session",
         func = function() _DoResetSession() end,
         tooltip = "Reset session statistics (since the last login or reload UI).",
-        warning = "Resetting session data sets statistics since login or last UI load to zero. It does not affect per-character or account-wide data. This cannot be undone.",
+        warning =
+        "Resetting session data sets statistics since login or last UI load to zero. It does not affect per-character or account-wide data. This cannot be undone.",
         isDangerous = true,
         width = "half",
     },
@@ -82,7 +83,8 @@ local optionsTable = {
         name = "Reset Lifetime",
         func = function() _DoResetCharacter() end,
         tooltip = "Reset character lifetime statistics to zero.",
-        warning = "Resetting character data sets statistics for this character to zero. It does not affect session or account data. This cannot be undone.",
+        warning =
+        "Resetting character data sets statistics for this character to zero. It does not affect session or account data. This cannot be undone.",
         isDangerous = true,
         width = "half",
     },
@@ -91,7 +93,8 @@ local optionsTable = {
         name = "Reset Account",
         func = function() _DoResetAccount() end,
         tooltip = "Reset account lifetime data to zero. Does not affect per-character data.",
-        warning = "Resetting account data sets statistics for this account to zero. It does not affect session or per-character data. This cannot be undone.",
+        warning =
+        "Resetting account data sets statistics for this account to zero. It does not affect session or per-character data. This cannot be undone.",
         isDangerous = true,
         width = "half",
     },
@@ -100,7 +103,8 @@ local optionsTable = {
         name = "Reset All Data",
         func = function() _DoResetAll() end,
         tooltip = "Reset all data to zero. Except other characters.",
-        warning = "Resetting all data sets statistics for the session, current character, and account to zero. It does not affect other character data, so per-character statistics will be kept.",
+        warning =
+        "Resetting all data sets statistics for the session, current character, and account to zero. It does not affect other character data, so per-character statistics will be kept.",
         isDangerous = true,
         width = "half",
     },
@@ -112,8 +116,8 @@ local optionsTable = {
     {
         type = "dropdown",
         name = "Statistics Display",
-        choices = {"Session", "Character Lifetime", "Account Lifetime"},
-        choicesValues = {1, 2, 3},
+        choices = { "Session", "Character Lifetime", "Account Lifetime" },
+        choicesValues = { 1, 2, 3 },
         getFunc = function() return _GetMode() end,
         setFunc = function(mode) _SetMode(mode) end,
         tooltip = "Change which statistics are displayed in the main window",
@@ -134,4 +138,3 @@ function S2W.Settings:Init()
 
     S2W:Trace(3, "Finished Settings Init")
 end
-
