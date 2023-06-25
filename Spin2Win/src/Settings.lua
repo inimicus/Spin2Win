@@ -15,13 +15,13 @@ S2W.Settings = {}
 -- Reset Data
 local function _DoResetSession()
     S2W.UI.Spins = 0
-    S2W.UI.Wins = 0
+    S2W.UI.Wins  = 0
     S2W.UI.Update(false)
 end
 
 local function _DoResetCharacter()
     S2W.savedCharacter.spins = 0
-    S2W.savedCharacter.wins = 0
+    S2W.savedCharacter.wins  = 0
     S2W.UI.Update(false)
 end
 
@@ -64,67 +64,67 @@ local panelData    = {
 
 local optionsTable = {
     {
-        type = "header",
-        name = "Data",
+        type  = "header",
+        name  = "Data",
         width = "full",
     },
     {
-        type = "button",
-        name = "Reset Session",
-        func = function() _DoResetSession() end,
-        tooltip = "Reset session statistics (since the last login or reload UI).",
-        warning =
+        type        = "button",
+        name        = "Reset Session",
+        func        = _DoResetSession,
+        tooltip     = "Reset session statistics (since the last login or reload UI).",
+        warning     =
         "Resetting session data sets statistics since login or last UI load to zero. It does not affect per-character or account-wide data. This cannot be undone.",
         isDangerous = true,
-        width = "half",
+        width       = "half",
     },
     {
-        type = "button",
-        name = "Reset Lifetime",
-        func = function() _DoResetCharacter() end,
-        tooltip = "Reset character lifetime statistics to zero.",
-        warning =
+        type        = "button",
+        name        = "Reset Lifetime",
+        func        = _DoResetCharacter,
+        tooltip     = "Reset character lifetime statistics to zero.",
+        warning     =
         "Resetting character data sets statistics for this character to zero. It does not affect session or account data. This cannot be undone.",
         isDangerous = true,
-        width = "half",
+        width       = "half",
     },
     {
-        type = "button",
-        name = "Reset Account",
-        func = function() _DoResetAccount() end,
-        tooltip = "Reset account lifetime data to zero. Does not affect per-character data.",
-        warning =
+        type        = "button",
+        name        = "Reset Account",
+        func        = _DoResetAccount,
+        tooltip     = "Reset account lifetime data to zero. Does not affect per-character data.",
+        warning     =
         "Resetting account data sets statistics for this account to zero. It does not affect session or per-character data. This cannot be undone.",
         isDangerous = true,
-        width = "half",
+        width       = "half",
     },
     {
-        type = "button",
-        name = "Reset All Data",
-        func = function() _DoResetAll() end,
-        tooltip = "Reset all data to zero. Except other characters.",
-        warning =
+        type        = "button",
+        name        = "Reset All Data",
+        func        = _DoResetAll,
+        tooltip     = "Reset all data to zero. Except other characters.",
+        warning     =
         "Resetting all data sets statistics for the session, current character, and account to zero. It does not affect other character data, so per-character statistics will be kept.",
         isDangerous = true,
-        width = "half",
+        width       = "half",
     },
     {
-        type = "header",
-        name = "Counter",
+        type  = "header",
+        name  = "Counter",
         width = "full",
     },
     {
-        type = "dropdown",
-        name = "Statistics Display",
-        choices = { "Session", "Character Lifetime", "Account Lifetime" },
+        type          = "dropdown",
+        name          = "Statistics Display",
+        choices       = { "Session", "Character Lifetime", "Account Lifetime" },
         choicesValues = { 1, 2, 3 },
-        getFunc = function() return _GetMode() end,
-        setFunc = function(mode) _SetMode(mode) end,
-        tooltip = "Change which statistics are displayed in the main window",
+        getFunc       = _GetMode,
+        setFunc       = _SetMode,
+        tooltip       = "Change which statistics are displayed in the main window",
         -- Tooltips appear to be bugged and don't properly disappear.
         --choicesTooltips = {"Statistics since logging in or reloading the UI.", "Lifetime stats for the current character.", "Lifetime stats of all characters in the account combined."},
-        width = "full",
-        scrollable = false,
+        width         = "full",
+        scrollable    = false,
     },
 }
 

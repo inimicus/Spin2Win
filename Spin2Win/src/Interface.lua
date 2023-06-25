@@ -6,8 +6,8 @@
 -- Interface.lua
 -- -----------------------------------------------------------------------------
 
-local WM = WINDOW_MANAGER
-local SM = SCENE_MANAGER
+local WM      = WINDOW_MANAGER
+local SM      = SCENE_MANAGER
 
 S2W.UI        = {}
 

@@ -102,8 +102,7 @@ end
 -- @param *integer* abilityId
 -- @param *CombatUnitType* sourceType
 -- @return none
-local function _DidSpin(_, changeType, _, effectName, unitTag, _, _,
-                        stackCount, _, _, _, _, _, _, _, effectAbilityId)
+local function _DidSpin(_, changeType, _, effectName, _, _, _, _, _, _, _, _, _, _, _, effectAbilityId)
     -- Ignore non-gained effects
     if changeType ~= ACTION_RESULT_EFFECT_GAINED then return end
 
@@ -131,8 +130,7 @@ end
 -- @param *integer* targetUnitId
 -- @param *integer* abilityId
 -- @return none
-local function _AvAWin(eventID, result, isError, abilityName, _, _, sourceName, sourceType, targetName, targetType, _, _,
-                       _, _, _, _, abilityId)
+local function _AvAWin(_, _, _, abilityName, _, _, sourceName, sourceType, targetName, _, _, _, _, _, _, _, abilityId)
     -- Only count player wins
     if sourceType == COMBAT_UNIT_TYPE_PLAYER and sourceName ~= targetName then
         S2W:Trace(2, "AVA Win: <<1>> killed <<2>> with <<3>> (<<4>>)", sourceName, targetName, abilityName, abilityId)

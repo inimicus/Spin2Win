@@ -6,8 +6,8 @@
 -- Main.lua
 -- -----------------------------------------------------------------------------
 
-local EM = EVENT_MANAGER
-local SC = SLASH_COMMANDS
+local EM           = EVENT_MANAGER
+local SC           = SLASH_COMMANDS
 
 S2W                = {}
 S2W.name           = "Spin2Win"
