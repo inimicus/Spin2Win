@@ -6,6 +6,9 @@
 -- Main.lua
 -- -----------------------------------------------------------------------------
 
+local EM = EVENT_MANAGER
+local SC = SLASH_COMMANDS
+
 S2W                = {}
 S2W.name           = "Spin2Win"
 S2W.version        = "1.3.0"
@@ -45,7 +48,7 @@ local function S2W_Initialize(event, addonName)
     if addonName ~= S2W.name then return end
 
     S2W:Trace(1, "Spin2Win Loaded")
-    EVENT_MANAGER:UnregisterForEvent(S2W.name, EVENT_ADD_ON_LOADED)
+    EM:UnregisterForEvent(S2W.name, EVENT_ADD_ON_LOADED)
 
     S2W.saved = ZO_SavedVars:NewAccountWide("Spin2WinVariables", S2W.dbVersion, nil, S2W.Defaults:Get())
     S2W.savedCharacter = ZO_SavedVars:New("Spin2WinVariables", S2W.dbVersion, nil, S2W.Defaults:GetCharacter())
@@ -56,8 +59,8 @@ local function S2W_Initialize(event, addonName)
         S2W:Trace(1, "Setting debug value to saved: " .. S2W.saved.debugMode)
     end
 
-    SLASH_COMMANDS[S2W.slash] = S2W.UI.SlashCommand
-    SLASH_COMMANDS['/s2wreport'] = S2W.UI.Report
+    SC[S2W.slash] = S2W.UI.SlashCommand
+    SC['/s2wreport'] = S2W.UI.Report
 
     -- Update initial dead state
     S2W.isDead = IsUnitDead("player")
@@ -74,4 +77,4 @@ end
 -- Event Hooks
 -- -----------------------------------------------------------------------------
 
-EVENT_MANAGER:RegisterForEvent(S2W.name, EVENT_ADD_ON_LOADED, S2W_Initialize)
+EM:RegisterForEvent(S2W.name, EVENT_ADD_ON_LOADED, S2W_Initialize)

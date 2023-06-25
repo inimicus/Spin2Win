@@ -6,6 +6,9 @@
 -- Tracking.lua
 -- -----------------------------------------------------------------------------
 
+local EM                        = EVENT_MANAGER
+local WM                        = WINDOW_MANAGER
+
 S2W.Tracking                    = {}
 
 -- Convenience constants identifying skill lines, skills in skill tree
@@ -172,14 +175,14 @@ local function _RegisterEventsForId(abilityId)
     S2W:Trace(2, "Registering - Ability: <<1>> Effect: <<2>>", abilityId, effectId)
 
     -- Spins
-    EVENT_MANAGER:RegisterForEvent(S2W.name .. '_' .. effectId, EVENT_COMBAT_EVENT, _DidSpin)
-    EVENT_MANAGER:AddFilterForEvent(S2W.name .. '_' .. effectId, EVENT_COMBAT_EVENT,
+    EM:RegisterForEvent(S2W.name .. '_' .. effectId, EVENT_COMBAT_EVENT, _DidSpin)
+    EM:AddFilterForEvent(S2W.name .. '_' .. effectId, EVENT_COMBAT_EVENT,
         REGISTER_FILTER_ABILITY_ID, effectId,
         REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER)
 
     -- AVA Wins
-    EVENT_MANAGER:RegisterForEvent(S2W.name .. '_' .. abilityId, EVENT_COMBAT_EVENT, _AvAWin)
-    EVENT_MANAGER:AddFilterForEvent(S2W.name .. '_' .. abilityId, EVENT_COMBAT_EVENT,
+    EM:RegisterForEvent(S2W.name .. '_' .. abilityId, EVENT_COMBAT_EVENT, _AvAWin)
+    EM:AddFilterForEvent(S2W.name .. '_' .. abilityId, EVENT_COMBAT_EVENT,
         REGISTER_FILTER_ABILITY_ID, abilityId,
         REGISTER_FILTER_UNIT_TAG, COMBAT_UNIT_TYPE_PLAYER,
         REGISTER_FILTER_IS_ERROR, false,
@@ -187,13 +190,13 @@ local function _RegisterEventsForId(abilityId)
     )
 
     -- Battlegrounds KBs
-    EVENT_MANAGER:RegisterForEvent(S2W.name, EVENT_BATTLEGROUND_KILL, _BGWin)
-    EVENT_MANAGER:AddFilterForEvent(S2W.name, EVENT_BATTLEGROUND_KILL,
+    EM:RegisterForEvent(S2W.name, EVENT_BATTLEGROUND_KILL, _BGWin)
+    EM:AddFilterForEvent(S2W.name, EVENT_BATTLEGROUND_KILL,
         REGISTER_FILTER_UNIT_TAG, COMBAT_UNIT_TYPE_PLAYER)
 
     -- Hide/Show on Death/Alive
-    EVENT_MANAGER:RegisterForEvent(S2W.name, EVENT_PLAYER_ALIVE, _OnAlive)
-    EVENT_MANAGER:RegisterForEvent(S2W.name, EVENT_PLAYER_DEAD, _OnDeath)
+    EM:RegisterForEvent(S2W.name, EVENT_PLAYER_ALIVE, _OnAlive)
+    EM:RegisterForEvent(S2W.name, EVENT_PLAYER_DEAD, _OnDeath)
 end
 
 -- Unregister events, call when tracking should be disabled
@@ -204,15 +207,15 @@ local function _UnregisterEventsForId(abilityId)
 
     local effectId = IDs[abilityId]
 
-    EVENT_MANAGER:UnregisterForEvent(S2W.name .. '_' .. effectId, EVENT_EFFECT_CHANGED)
-    EVENT_MANAGER:UnregisterForEvent(S2W.name .. '_' .. abilityId, EVENT_COMBAT_EVENT)
+    EM:UnregisterForEvent(S2W.name .. '_' .. effectId, EVENT_EFFECT_CHANGED)
+    EM:UnregisterForEvent(S2W.name .. '_' .. abilityId, EVENT_COMBAT_EVENT)
 
     -- Battlegrounds
-    EVENT_MANAGER:UnregisterForEvent(S2W.name, EVENT_BATTLEGROUND_KILL)
+    EM:UnregisterForEvent(S2W.name, EVENT_BATTLEGROUND_KILL)
 
     -- Death state
-    EVENT_MANAGER:UnregisterForEvent(S2W.name, EVENT_PLAYER_ALIVE)
-    EVENT_MANAGER:UnregisterForEvent(S2W.name, EVENT_PLAYER_DEAD)
+    EM:UnregisterForEvent(S2W.name, EVENT_PLAYER_ALIVE)
+    EM:UnregisterForEvent(S2W.name, EVENT_PLAYER_DEAD)
 end
 
 -- -----------------------------------------------------------------------------
@@ -245,7 +248,7 @@ function S2W.Tracking.CheckSpinSlotted()
             _RegisterEventsForId(abilityId)
             S2W.UI.Draw()
 
-            local textureControl = WINDOW_MANAGER:GetControlByName("S2WTexture")
+            local textureControl = WM:GetControlByName("S2WTexture")
             local texture = GetAbilityIcon(abilityId)
             textureControl:SetTexture(texture)
 
@@ -272,7 +275,7 @@ end
 -- @return none
 function S2W.Tracking.RegisterEvents()
     S2W:Trace(2, "Registering events")
-    EVENT_MANAGER:RegisterForEvent(S2W.name, EVENT_ACTION_SLOTS_ALL_HOTBARS_UPDATED, _HotbarsUpdated)
+    EM:RegisterForEvent(S2W.name, EVENT_ACTION_SLOTS_ALL_HOTBARS_UPDATED, _HotbarsUpdated)
 end
 
 -- Unregister above events
@@ -280,5 +283,5 @@ end
 -- @return none
 function S2W.Tracking.UnregisterEvents()
     S2W:Trace(2, "Unregistering events")
-    EVENT_MANAGER:UnregisterForEvent(S2W.name, EVENT_ACTION_SLOTS_ALL_HOTBARS_UPDATED)
+    EM:UnregisterForEvent(S2W.name, EVENT_ACTION_SLOTS_ALL_HOTBARS_UPDATED)
 end

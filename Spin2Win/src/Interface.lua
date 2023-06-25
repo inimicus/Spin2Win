@@ -6,6 +6,9 @@
 -- Interface.lua
 -- -----------------------------------------------------------------------------
 
+local WM = WINDOW_MANAGER
+local SM = SCENE_MANAGER
+
 S2W.UI        = {}
 
 -- Session Storage
@@ -26,10 +29,10 @@ end
 local function _ToggleDraggable(state)
     if S2W.saved.unlocked then
         if state then
-            WINDOW_MANAGER:SetMouseCursor(12)
+            WM:SetMouseCursor(12)
             S2W.Background:SetCenterColor(0.5, 0.5, 0.5, 0.25)
         else
-            WINDOW_MANAGER:SetMouseCursor(0)
+            WM:SetMouseCursor(0)
             S2W.Background:SetCenterColor(0.1, 0.1, 0.1, 0.25)
         end
     end
@@ -90,12 +93,12 @@ end
 -- -----------------------------------------------------------------------------
 
 function S2W.UI.Draw()
-    local container = WINDOW_MANAGER:GetControlByName("S2WContainer")
+    local container = WM:GetControlByName("S2WContainer")
 
     if S2W.enabled then
         -- Draw UI and create context if it doesn't exist
         if container == nil then
-            local c = WINDOW_MANAGER:CreateTopLevelWindow("S2WContainer")
+            local c = WM:CreateTopLevelWindow("S2WContainer")
             c:SetClampedToScreen(true)
             c:SetDimensions(200, 50)
             c:ClearAnchors()
@@ -111,7 +114,7 @@ function S2W.UI.Draw()
             c:SetHandler("OnMouseEnter", function(...) _ToggleDraggable(true) end)
             c:SetHandler("OnMouseExit", function(...) _ToggleDraggable(false) end)
 
-            local bg = WINDOW_MANAGER:CreateControl("S2WBackdrop", c, CT_BACKDROP)
+            local bg = WM:CreateControl("S2WBackdrop", c, CT_BACKDROP)
             bg:SetEdgeColor(0.1, 0.1, 0.1, 0.25)
             bg:SetEdgeTexture(nil, 1, 1, 0, nil)
             bg:SetCenterColor(0.1, 0.1, 0.1, 0.25)
@@ -120,12 +123,12 @@ function S2W.UI.Draw()
             bg:SetAlpha(1)
             bg:SetDrawLayer(0)
 
-            local r = WINDOW_MANAGER:CreateControl("S2WTexture", c, CT_TEXTURE)
+            local r = WM:CreateControl("S2WTexture", c, CT_TEXTURE)
             r:SetTexture('/esoui/art/icons/ability_dualwield_005_b.dds')
             r:SetDimensions(50, 50)
             r:SetAnchor(TOPLEFT, c, TOPLEFT, 0, 0)
 
-            local sl = WINDOW_MANAGER:CreateControl("S2WSpinsLabel", c, CT_LABEL)
+            local sl = WM:CreateControl("S2WSpinsLabel", c, CT_LABEL)
             sl:SetAnchor(TOPLEFT, c, TOPLEFT, 55, 2)
             sl:SetDimensions(45, 25)
             sl:SetColor(0.68, 0.96, 0.49, 1)
@@ -135,7 +138,7 @@ function S2W.UI.Draw()
             sl:SetPixelRoundingEnabled(true)
             sl:SetText("Spins:")
 
-            local wl = WINDOW_MANAGER:CreateControl("S2WWinsLabel", c, CT_LABEL)
+            local wl = WM:CreateControl("S2WWinsLabel", c, CT_LABEL)
             wl:SetAnchor(TOPLEFT, c, TOPLEFT, 55, 25)
             wl:SetDimensions(45, 25)
             wl:SetColor(0.68, 0.96, 0.49, 1)
@@ -145,7 +148,7 @@ function S2W.UI.Draw()
             wl:SetPixelRoundingEnabled(true)
             wl:SetText("Wins:")
 
-            local sc = WINDOW_MANAGER:CreateControl("S2WSpinsCount", c, CT_LABEL)
+            local sc = WM:CreateControl("S2WSpinsCount", c, CT_LABEL)
             sc:SetAnchor(TOPLEFT, c, TOPLEFT, 105, 2)
             sc:SetDimensions(105, 25)
             sc:SetColor(1, 1, 1, 1)
@@ -155,7 +158,7 @@ function S2W.UI.Draw()
             sc:SetPixelRoundingEnabled(true)
             sc:SetText("--")
 
-            local wc = WINDOW_MANAGER:CreateControl("S2WWinsCount", c, CT_LABEL)
+            local wc = WM:CreateControl("S2WWinsCount", c, CT_LABEL)
             wc:SetAnchor(TOPLEFT, c, TOPLEFT, 105, 25)
             wc:SetDimensions(105, 25)
             wc:SetColor(1, 1, 1, 1)
@@ -265,10 +268,10 @@ function S2W.UI.UpdateWins(shouldIncrement)
 end
 
 function S2W.UI.ToggleHUD()
-    local hudScene = SCENE_MANAGER:GetScene("hud")
+    local hudScene = SM:GetScene("hud")
     hudScene:RegisterCallback("StateChange", function(oldState, newState)
         -- Transitioning to a menu/non-HUD
-        if newState == SCENE_HIDDEN and SCENE_MANAGER:GetNextScene():GetName() ~= "hudui" then
+        if newState == SCENE_HIDDEN and SM:GetNextScene():GetName() ~= "hudui" then
             S2W.HUDHidden = true
             S2W:Trace(3, "Hiding HUD")
             S2W.UI.Show(false)
@@ -286,7 +289,7 @@ function S2W.UI.ToggleHUD()
 end
 
 function S2W.UI.Show(shouldShow)
-    local context = WINDOW_MANAGER:GetControlByName("S2WContainer")
+    local context = WM:GetControlByName("S2WContainer")
     if context ~= nil then
         if S2W.ForceShow then
             context:SetHidden(false)
