@@ -62,8 +62,6 @@ local function _Report(command)
             sessionRatio = 0
         end
 
-        -- ·•°•·
-
         local lifetimeRatio = S2W.savedCharacter.wins / S2W.savedCharacter.spins
         if lifetimeRatio ~= lifetimeRatio or lifetimeRatio < 0 then
             lifetimeRatio = 0
@@ -71,9 +69,13 @@ local function _Report(command)
 
         StartChatInput(zo_strformat(
             "·•°•· Spin2Win Report ·•°•·  Spins: <<1>> (Lifetime <<4>>)  •  Wins: <<2>> (Lifetime <<5>>)  •  Ratio: <<3>> (Lifetime <<6>>)",
-            _FormatThousands(session.spins), _FormatThousands(session.wins), string.format("%.2f", sessionRatio),
-            _FormatThousands(S2W.savedCharacter.spins), _FormatThousands(S2W.savedCharacter.wins),
-            string.format("%.2f", lifetimeRatio)))
+            _FormatThousands(session.spins),
+            _FormatThousands(session.wins),
+            string.format("%.2f", sessionRatio),
+            _FormatThousands(S2W.savedCharacter.spins),
+            _FormatThousands(S2W.savedCharacter.wins),
+            string.format("%.2f", lifetimeRatio)
+        ))
     elseif command == "account" then
         -- Handle nan or negative, change to zero
         local accountRatio = S2W.saved.wins / S2W.saved.spins
@@ -81,8 +83,12 @@ local function _Report(command)
             accountRatio = 0
         end
 
-        StartChatInput(zo_strformat("·•°•· Spin2Win Report ·•°•· Account-wide ·•°•·  Spins: <<1>>  •  Wins: <<2>>  •  Ratio: <<3>>",
-            _FormatThousands(S2W.saved.spins), _FormatThousands(S2W.saved.wins), string.format("%.2f", accountRatio)))
+        StartChatInput(zo_strformat(
+            "·•°•· Spin2Win Report ·•°•· Account-wide ·•°•·  Spins: <<1>>  •  Wins: <<2>>  •  Ratio: <<3>>",
+            _FormatThousands(S2W.saved.spins),
+            _FormatThousands(S2W.saved.wins),
+            string.format("%.2f", accountRatio)
+        ))
 
         -- Default ----------------------------------------------------------------
     else
