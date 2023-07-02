@@ -55,12 +55,14 @@ local function _SetPosition(left, top)
 end
 
 local function _Report(command)
-    if command == "" or command == "report" then
+    if command == "" then
         -- Handle nan or negative, change to zero
         local sessionRatio = session.wins / session.spins
         if sessionRatio ~= sessionRatio or sessionRatio < 0 then
             sessionRatio = 0
         end
+
+        -- ·•°•·
 
         local lifetimeRatio = S2W.savedCharacter.wins / S2W.savedCharacter.spins
         if lifetimeRatio ~= lifetimeRatio or lifetimeRatio < 0 then
@@ -68,23 +70,23 @@ local function _Report(command)
         end
 
         StartChatInput(zo_strformat(
-            "*** Spin2Win Report *** Spins: <<1>> - Wins: <<2>> - Ratio: <<3>> - Lifetime Spins: <<4>> - Lifetime Wins: <<5>> - Lifetime Ratio: <<6>>",
+            "·•°•· Spin2Win Report ·•°•·  Spins: <<1>> (Lifetime <<4>>)  •  Wins: <<2>> (Lifetime <<5>>)  •  Ratio: <<3>> (Lifetime <<6>>)",
             _FormatThousands(session.spins), _FormatThousands(session.wins), string.format("%.2f", sessionRatio),
             _FormatThousands(S2W.savedCharacter.spins), _FormatThousands(S2W.savedCharacter.wins),
             string.format("%.2f", lifetimeRatio)))
-    elseif command == "account" or command == "report account" then
+    elseif command == "account" then
         -- Handle nan or negative, change to zero
         local accountRatio = S2W.saved.wins / S2W.saved.spins
         if accountRatio ~= accountRatio or accountRatio < 0 then
             accountRatio = 0
         end
 
-        StartChatInput(zo_strformat("*** Spin2Win Report - Account-wide *** Spins: <<1>> - Wins: <<2>> - Ratio: <<3>>",
+        StartChatInput(zo_strformat("·•°•· Spin2Win Report ·•°•· Account-wide ·•°•·  Spins: <<1>>  •  Wins: <<2>>  •  Ratio: <<3>>",
             _FormatThousands(S2W.saved.spins), _FormatThousands(S2W.saved.wins), string.format("%.2f", accountRatio)))
 
         -- Default ----------------------------------------------------------------
     else
-        d(S2W.prefix .. "Command not recognized!")
+        d(zo_strformat("<<1>>Command `report <<2>>` not recognized!", S2W.prefix, command))
     end
 end
 
@@ -337,11 +339,11 @@ function S2W.UI.SlashCommand(command)
         S2W.UI.Update(false)
 
         -- Reporting---------------------------------------------------------------
-    elseif command == "report" then
-        _Report(command)
+    elseif command == "report" or string.sub(command, 1, 7) == "report " then
+        _Report(string.sub(command, 8))
 
         -- Default ----------------------------------------------------------------
     else
-        d(S2W.prefix .. "Command not recognized!")
+        d(zo_strformat("<<1>>Command `<<2>>` not recognized!", S2W.prefix, command))
     end
 end

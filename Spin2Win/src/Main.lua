@@ -60,7 +60,6 @@ local function S2W_Initialize(_, addonName)
     end
 
     SC[S2W.slash] = S2W.UI.SlashCommand
-    SC['/s2wreport'] = S2W.UI.Report
 
     -- Update initial dead state
     S2W.isDead = IsUnitDead("player")

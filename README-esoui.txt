@@ -13,7 +13,7 @@ Now you can!
 [*]Displays total wins (killing blows against a player using the aforementioned skills)
 [*]Toggleable lifetime, session, and account spin/win statistics
 [*]Manual statistics reset
-[*]Post to chat, share how much winning you did, type /s2wreport in chat
+[*]Post to chat, share how much winning you did, type `/s2w report` or `/s2w report account` in chat
 [*]Disables display and tracking when Spin to Win isn't slotted
 [/LIST]
 
